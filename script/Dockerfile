@@ -1,5 +1,8 @@
 FROM python:3
 
+ENV APP_HOME /app
+WORKDIR $APP_HOME
+
 RUN set -x && \
   apt-get update && \
   apt-get install -y vim && \
@@ -11,4 +14,7 @@ RUN set -x && \
   pip install httplib2 && \
   pip install nose && \
   pip install oauth2client && \
-  pip install gspread
+  pip install gspread && \
+  pip install Flask gunicorn
+
+CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 app:app

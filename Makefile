@@ -25,3 +25,7 @@ pushgcr:
 	gcloud config set project single-mix-174909
 	docker build -t asia.gcr.io/single-mix-174909/trancom -f ./script/Dockerfile ./
 	docker push asia.gcr.io/single-mix-174909/trancom
+
+
+deployCloudRun:
+	gcloud beta run deploy --image asia.gcr.io/single-mix-174909/trancom

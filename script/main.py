@@ -18,6 +18,10 @@ import shutil
 
 import pdb
 
+from flask import Flask
+
+app = Flask(__name__)
+
 
 JOB_CONVERT_RULE = {}
 FROM_ADDRESS = os.environ['FROM_ADDRESS']
@@ -774,6 +778,7 @@ def insert_log(start_time, row):
             if i != len(row) - 1:
                 log_f.write(",")
 
+@app.route('/')
 def main():
     try:
         global JOB_CONVERT_RULE
@@ -801,3 +806,6 @@ def main():
             'link_names': 1,
         }))
 main()
+
+if __name__ == "__main__":
+    app.run(debug=True,host='0.0.0.0',port=int(os.environ.get('PORT', 8080)))
