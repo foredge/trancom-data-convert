@@ -1,0 +1,30 @@
+selenium-hub:
+  image: selenium/hub
+  container_name: 'selenium-hub'
+  ports:
+    - 14444:4444
+
+chrome:
+  image: selenium/node-chrome-debug
+  container_name: 'chrome'
+  links:
+    - selenium-hub:hub
+  ports:
+    - 15900:5900
+  volumes:
+    - /dev/shm:/dev/shm
+    - ./script/csv/next:/home/seluser/Downloads
+
+python3:
+  build: './script'
+  container_name: 'python3'
+  links:
+    - selenium-hub:hub
+  command: 'tail -f /dev/null'
+  working_dir: '/root/script/'
+  volumes:
+    - ./script/:/root/script/
+  env_file:
+    - ./.env
+  environment:
+    - 'TZ=Asia/Tokyo'
