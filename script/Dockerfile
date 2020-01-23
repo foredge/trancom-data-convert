@@ -1,3 +1,5 @@
+# 参考にしたサイト
+# https://hodalog.com/use-selenium-on-docker/
 FROM python:3.7-alpine
 
 ENV APP_HOME /app
