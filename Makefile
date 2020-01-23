@@ -23,7 +23,7 @@ vnc:
 
 pushgcr:
 	gcloud config set project single-mix-174909
-	docker build -t asia.gcr.io/single-mix-174909/trancom -f ./script/Dockerfile ./
+	docker build -t asia.gcr.io/single-mix-174909/trancom -f ./script/Dockerfile ./script
 	docker push asia.gcr.io/single-mix-174909/trancom
 
 
