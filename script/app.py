@@ -1,5 +1,5 @@
-from selenium import webdriver
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+# from selenium import webdriver
+# from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from time import sleep
 import datetime
 import os
@@ -15,13 +15,8 @@ import smtplib
 from email.mime.text import MIMEText
 from email.utils import formatdate
 import shutil
-
 import pdb
-
 from flask import Flask
-
-app = Flask(__name__)
-
 
 JOB_CONVERT_RULE = {}
 FROM_ADDRESS = os.environ['FROM_ADDRESS']
@@ -30,6 +25,8 @@ TO_ADDRESS = os.environ['TO_ADDRESS']
 BCC = ''
 SUBJECT = 'トランコム自動アップロードが失敗しました。'
 BODY = ''
+
+app = Flask(__name__)
 
 def create_message(from_addr, to_addr, bcc_addrs, subject, body):
     msg = MIMEText(body)
@@ -783,29 +780,30 @@ def main():
     try:
         global JOB_CONVERT_RULE
         JOB_CONVERT_RULE = get_job_convert_rule()
-        start_time = datetime.datetime.today().strftime("%Y%m%d%H%M%S")
-        csv_download_from_next(start_time)
-        csv_download_from_smart(start_time)
-        csv_make_for_trancom(start_time)
+        # start_time = datetime.datetime.today().strftime("%Y%m%d%H%M%S")
+        # csv_download_from_next(start_time)
+        # csv_download_from_smart(start_time)
+        # csv_make_for_trancom(start_time)
         # g_drive_upload_next(start_time)
         # g_drive_upload_smart(start_time)
         # g_drive_upload_trancom(start_time)
         # g_drive_upload_log(start_time)
         # csv_upload(start_time)
+        return JOB_CONVERT_RULE
     except:
-        subject = 'トランコム自動アップロードのスクリプトが異常終了しました'
+        # subject = 'トランコム自動アップロードのスクリプトが異常終了しました'
         # body = 'プログラムの実行時にエラーが発生しました。システム管理者にご報告ください。'
         #
         # msg = create_message(FROM_ADDRESS, TO_ADDRESS, BCC, subject, body)
         # send(FROM_ADDRESS, TO_ADDRESS, msg)
         #
-        requests.post('https://hooks.slack.com/services/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', data=json.dumps({
-            'text': subject + "\n" + traceback.format_exc(),
-            'username': u'trancom',
-            'icon_emoji': u':ghost:',
-            'link_names': 1,
-        }))
-main()
+        # requests.post('https://hooks.slack.com/services/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', data=json.dumps({
+        #     'text': subject + "\n" + traceback.format_exc(),
+        #     'username': u'trancom',
+        #     'icon_emoji': u':ghost:',
+        #     'link_names': 1,
+        # }))
+        return f'Except!!'
 
 if __name__ == "__main__":
-    app.run(debug=True,host='0.0.0.0',port=int(os.environ.get('PORT', 8080)))
+    app.run(debug=True,host='0.0.0.0',port=int(8000))

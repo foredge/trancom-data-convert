@@ -1,20 +1,25 @@
+FROM python:3.7
+
+
 FROM python:3
 
 ENV APP_HOME /app
+ENV FLASK_ENV development
 WORKDIR $APP_HOME
+COPY . .
 
 RUN set -x && \
-  apt-get update && \
-  apt-get install -y vim && \
-  pip install selenium && \
-  pip install PyDrive && \ 
-  pip install google-api-python-client && \
-  pip install google-auth && \
-  pip install google-auth-httplib2 && \
-  pip install httplib2 && \
-  pip install nose && \
-  pip install oauth2client && \
-  pip install gspread && \
-  pip install Flask gunicorn
+  apt-get update && apt-get install -y vim && \
+  pip install \
+  selenium \
+  PyDrive \
+  google-api-python-client \
+  google-auth \
+  google-auth-httplib2 \
+  httplib2 \
+  nose \
+  oauth2client \
+  gspread \
+  Flask
 
-CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 app:app
+CMD flask run --host='0.0.0.0' --port=8000
