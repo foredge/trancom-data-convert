@@ -1,5 +1,6 @@
-# from selenium import webdriver
-# from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from selenium import webdriver
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from selenium.webdriver.chrome.options import Options
 from time import sleep
 import datetime
 import os
@@ -95,9 +96,25 @@ def csv_download_from_next(start_time):
     new_dir_path = 'csv/next/' + start_time
     os.mkdir(new_dir_path)
     # HEADLESSブラウザに接続
-    driver = webdriver.Remote(
-        command_executor='http://selenium-hub:4444/wd/hub',
-        desired_capabilities=DesiredCapabilities.CHROME)
+    # driver = webdriver.Remote(
+    #     command_executor='http://selenium-hub:4444/wd/hub',
+    #     desired_capabilities=DesiredCapabilities.CHROME)
+
+    options = Options()
+    options.add_argument('--headless')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-gpu')
+    options.add_argument('--disable-popup-blocking')
+    options.add_argument('--window-size=1366,768')
+    driver = webdriver.Chrome(chrome_options=options)
+    driver.command_executor._commands["send_command"] = ("POST", '/session/$sessionId/chromium/send_command')
+    driver.execute("send_command", {
+        'cmd': 'Page.setDownloadBehavior',
+        'params': {
+            'behavior': 'allow',
+            'downloadPath': new_dir_path
+        }
+    })
 
     next_login(driver)
 
@@ -105,7 +122,7 @@ def csv_download_from_next(start_time):
     download_file_path = "./csv/next/job_" + start_time[:8] + ".csv"
     sleep(10)
     # ファイルを移動
-    shutil.move(download_file_path, new_dir_path)
+    # shutil.move(download_file_path, new_dir_path)
     driver.close()
     driver.quit()
 
@@ -381,7 +398,6 @@ def csv_make_for_trancom(start_time):
             insert_log(start_time, insert_record)
             writer.writerow(insert_record)
 
-
 def csv_converter(data, exist_records):
     # smartのデータを読み込んで変換をする
     if data.__len__() == 84:
@@ -611,7 +627,6 @@ def add_particular_about(record):
 
     return record
 
-
 def temporary_staff(employee_type, data):
     if employee_type == '派遣':
         if data == '派遣':
@@ -777,20 +792,20 @@ def insert_log(start_time, row):
 
 @app.route('/')
 def main():
-    try:
-        global JOB_CONVERT_RULE
-        JOB_CONVERT_RULE = get_job_convert_rule()
-        # start_time = datetime.datetime.today().strftime("%Y%m%d%H%M%S")
-        # csv_download_from_next(start_time)
-        # csv_download_from_smart(start_time)
-        # csv_make_for_trancom(start_time)
-        # g_drive_upload_next(start_time)
-        # g_drive_upload_smart(start_time)
-        # g_drive_upload_trancom(start_time)
-        # g_drive_upload_log(start_time)
-        # csv_upload(start_time)
-        return JOB_CONVERT_RULE
-    except:
+    # try:
+    global JOB_CONVERT_RULE
+    JOB_CONVERT_RULE = get_job_convert_rule()
+    start_time = datetime.datetime.today().strftime("%Y%m%d%H%M%S")
+    csv_download_from_next(start_time)
+    # csv_download_from_smart(start_time)
+    # csv_make_for_trancom(start_time)
+    # g_drive_upload_next(start_time)
+    # g_drive_upload_smart(start_time)
+    # g_drive_upload_trancom(start_time)
+    # g_drive_upload_log(start_time)
+    # csv_upload(start_time)
+    return f'hello'
+    # except:
         # subject = 'トランコム自動アップロードのスクリプトが異常終了しました'
         # body = 'プログラムの実行時にエラーが発生しました。システム管理者にご報告ください。'
         #
@@ -803,7 +818,7 @@ def main():
         #     'icon_emoji': u':ghost:',
         #     'link_names': 1,
         # }))
-        return f'Except!!'
+        # return f'Except!!'
 
 if __name__ == "__main__":
     app.run(debug=True,host='0.0.0.0',port=int(8000))
