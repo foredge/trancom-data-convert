@@ -17,7 +17,7 @@ logf:
 # selenium vnc
 # pass: secret
 vnc:
-	open vnc://localhost:15900
+	open vnc://localhost:5900
 
 
 # 本番検証用

@@ -2,7 +2,7 @@ selenium-hub:
   image: selenium/hub
   container_name: 'selenium-hub'
   ports:
-    - 14444:4444
+    - 4444:4444
 
 chrome:
   image: selenium/node-chrome-debug
@@ -10,7 +10,7 @@ chrome:
   links:
     - selenium-hub:hub
   ports:
-    - 15900:5900
+    - 5900:5900
   volumes:
     - /dev/shm:/dev/shm
     - ./script/csv/next:/home/seluser/Downloads
