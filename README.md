@@ -15,7 +15,7 @@
 - .envを追加
 中身は管理者に聞いてください
 
-開発用
+開発用()
 ```shell
 $ make build && make up
 ```

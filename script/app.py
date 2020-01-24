@@ -76,10 +76,17 @@ def next_login(driver):
 
 
 def csv_upload(start_time):
+    print('csv_upload')
     options = Options()
     options.add_argument('--headless')
-    driver = webdriver.Chrome(chrome_options=options)
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-gpu')
+    options.add_argument('--disable-popup-blocking')
+    options.add_argument('--window-size=1366,768')
+    # リモートブラウザに接続(開発用)
+    # driver = webdriver.Remote(command_executor='http://selenium-hub:4444/wd/hub',desired_capabilities=DesiredCapabilities.CHROME)
 
+    driver = webdriver.Chrome(chrome_options=options)
     next_login(driver)
 
     driver.get("https://trancom:sc@manage.4104510.com/job/csv_import/")
@@ -96,10 +103,8 @@ def csv_download_from_next(start_time):
     print('nextのcsvをダウンロード')
     new_dir_path = 'csv/next/' + start_time
     os.mkdir(new_dir_path)
-    # HEADLESSブラウザに接続
-    # driver = webdriver.Remote(
-    #     command_executor='http://selenium-hub:4444/wd/hub',
-    #     desired_capabilities=DesiredCapabilities.CHROME)
+    # リモートブラウザに接続(開発用)
+    # driver = webdriver.Remote(command_executor='http://selenium-hub:4444/wd/hub',desired_capabilities=DesiredCapabilities.CHROME)
 
     options = Options()
     options.add_argument('--headless')
@@ -792,20 +797,19 @@ def insert_log(start_time, row):
 @app.route('/')
 def main():
     try:
-        os.system("curl https://www.google.co.jp/")
-        
-        # global JOB_CONVERT_RULE
-        # JOB_CONVERT_RULE = get_job_convert_rule()
-        # start_time = datetime.datetime.today().strftime("%Y%m%d%H%M%S")
-        # csv_download_from_next(start_time)
-        # csv_download_from_smart(start_time)
-        # csv_make_for_trancom(start_time)
-        # g_drive_upload_next(start_time)
-        # g_drive_upload_smart(start_time)
-        # g_drive_upload_trancom(start_time)
-        # g_drive_upload_log(start_time)
-        # csv_upload(start_time)
-        return f'completed'
+        global JOB_CONVERT_RULE
+        JOB_CONVERT_RULE = get_job_convert_rule()
+        start_time = datetime.datetime.today().strftime("%Y%m%d%H%M%S")
+        csv_download_from_next(start_time)
+        csv_download_from_smart(start_time)
+        csv_make_for_trancom(start_time)
+        g_drive_upload_next(start_time)
+        g_drive_upload_smart(start_time)
+        g_drive_upload_trancom(start_time)
+        g_drive_upload_log(start_time)
+        csv_upload(start_time)
+        print('completed')
+        return f'ok!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
     except:
         subject = 'トランコム自動アップロードのスクリプトが異常終了しました'
         body = 'プログラムの実行時にエラーが発生しました。システム管理者にご報告ください。'
