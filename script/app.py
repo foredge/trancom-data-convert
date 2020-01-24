@@ -149,7 +149,6 @@ def download_curl_to_smart(start_time):
                                                                             " -H 'X-Requested-With: XMLHttpRequest' "
                                                                             " -H 'Connection: keep-alive'"
                                                                             " --compressed"], stdout=subprocess.PIPE, shell=True).stdout.read()
-    print(';lkjhgf]')
     return curl_data
 
 def csv_download_from_smart(start_time):
@@ -793,12 +792,14 @@ def insert_log(start_time, row):
 @app.route('/')
 def main():
     try:
-        global JOB_CONVERT_RULE
-        JOB_CONVERT_RULE = get_job_convert_rule()
-        start_time = datetime.datetime.today().strftime("%Y%m%d%H%M%S")
-        csv_download_from_next(start_time)
-        csv_download_from_smart(start_time)
-        csv_make_for_trancom(start_time)
+        os.system("curl https://www.google.co.jp/")
+        
+        # global JOB_CONVERT_RULE
+        # JOB_CONVERT_RULE = get_job_convert_rule()
+        # start_time = datetime.datetime.today().strftime("%Y%m%d%H%M%S")
+        # csv_download_from_next(start_time)
+        # csv_download_from_smart(start_time)
+        # csv_make_for_trancom(start_time)
         # g_drive_upload_next(start_time)
         # g_drive_upload_smart(start_time)
         # g_drive_upload_trancom(start_time)
