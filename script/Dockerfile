@@ -7,6 +7,7 @@ WORKDIR $APP_HOME
 COPY . .
 
 RUN apk add --update \
+      curl \
       wget \
       vim \
     # Add chromium and dependences

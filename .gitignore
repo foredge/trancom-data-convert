@@ -1,4 +1,5 @@
 .env
+script/__pycache__
 script/csv/next/*
 !script/csv/next/.keep
 script/csv/smart/*

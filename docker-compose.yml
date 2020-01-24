@@ -23,7 +23,7 @@ python3:
   command: 'tail -f /dev/null'
   working_dir: '/app'
   ports:
-    - 8080:8080
+    - 8000:8000
   volumes:
     - ./script/:/app
   env_file:
