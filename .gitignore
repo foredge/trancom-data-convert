@@ -1,0 +1,11 @@
+.env
+script/__pycache__
+script/csv/next/*
+!script/csv/next/.keep
+script/csv/smart/*
+!script/csv/smart/.keep
+script/csv/trancom/*
+!script/csv/trancom/.keep
+cookie.txt
+script/log/*
+!script/log/.keep

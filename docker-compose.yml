@@ -1,0 +1,41 @@
+selenium-hub:
+  image: selenium/hub
+  container_name: 'selenium-hub'
+  ports:
+    - 4444:4444
+
+chrome:
+  image: selenium/node-chrome-debug
+  container_name: 'chrome'
+  links:
+    - selenium-hub:hub
+  ports:
+    - 5900:5900
+  volumes:
+    - /dev/shm:/dev/shm
+    - ./script/csv/next:/home/seluser/Downloads
+
+python3:
+  build: './script'
+  container_name: 'python3'
+  command: 'tail -f /dev/null'
+  working_dir: '/app'
+  ports:
+    - 8000:8000
+  volumes:
+    - ./script/:/app
+  env_file:
+    - ./.env
+  environment:
+    - 'TZ=Asia/Tokyo'
+  links:
+    - nginx
+    - selenium-hub:hub
+
+nginx:
+  image: nginx
+  volumes:
+    - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    - ./nginx/conf.d:/etc/nginx/conf.d
+  ports:
+   - "80:80"
