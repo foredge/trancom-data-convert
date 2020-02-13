@@ -83,10 +83,10 @@ def csv_upload(start_time):
     options.add_argument('--disable-gpu')
     options.add_argument('--disable-popup-blocking')
     options.add_argument('--window-size=1366,768')
-    # リモートブラウザに接続(開発用)
-    # driver = webdriver.Remote(command_executor='http://selenium-hub:4444/wd/hub',desired_capabilities=DesiredCapabilities.CHROME)
 
     driver = webdriver.Chrome(chrome_options=options)
+    # リモートブラウザに接続(開発用)
+    # driver = webdriver.Remote(command_executor='http://selenium-hub:4444/wd/hub',desired_capabilities=DesiredCapabilities.CHROME)
     next_login(driver)
 
     driver.get("https://trancom:sc@manage.4104510.com/job/csv_import/")
@@ -103,8 +103,6 @@ def csv_download_from_next(start_time):
     print('nextのcsvをダウンロード')
     new_dir_path = 'csv/next/' + start_time
     os.mkdir(new_dir_path)
-    # リモートブラウザに接続(開発用)
-    # driver = webdriver.Remote(command_executor='http://selenium-hub:4444/wd/hub',desired_capabilities=DesiredCapabilities.CHROME)
 
     options = Options()
     options.add_argument('--headless')
@@ -113,6 +111,9 @@ def csv_download_from_next(start_time):
     options.add_argument('--disable-popup-blocking')
     options.add_argument('--window-size=1366,768')
     driver = webdriver.Chrome(chrome_options=options)
+    # リモートブラウザに接続(開発用)
+    # driver = webdriver.Remote(command_executor='http://selenium-hub:4444/wd/hub',desired_capabilities=DesiredCapabilities.CHROME)
+
     driver.command_executor._commands["send_command"] = ("POST", '/session/$sessionId/chromium/send_command')
     driver.execute("send_command", {
         'cmd': 'Page.setDownloadBehavior',
@@ -132,7 +133,7 @@ def csv_download_from_next(start_time):
 
 
 def download_curl_to_smart(start_time):
-    os.system("curl -c " + os.getcwd() + "/cookie.txt" + " -d " + os.environ['COOKIEBODY'] + " -k 'https://talent.metastasys.biz/sinfoniacloud/api/Login.json'"
+    os.system("curl -c " + os.getcwd() + "/cookie.txt" + " -d " + os.environ['COOKIEBODY'] + " -x http://" + os.environ['PROXY_SERVER']  + ":80 -k 'http://talent.metastasys.biz/sinfoniacloud/api/Login.json'"
                                                          " -H 'Origin: https://talent.metastasys.biz'"
                                                          " -H 'Accept-Encoding: gzip, deflate, br'"
                                                          " -H 'Accept-Language: ja,en-US;q=0.9,en;q=0.8'"
@@ -144,7 +145,7 @@ def download_curl_to_smart(start_time):
                                                          " -H 'Connection: keep-alive'"
                                                          " --compressed")
 
-    curl_data = subprocess.Popen(["curl -b " + os.getcwd() + "/cookie.txt" + " -k 'https://talent.metastasys.biz/sinfoniacloud/api/GetJobCaseReferListRESTFacade.json"
+    curl_data = subprocess.Popen(["curl -b " + os.getcwd() + "/cookie.txt" + " -x http://" + os.environ['PROXY_SERVER'] + ":80 -k 'http://talent.metastasys.biz/sinfoniacloud/api/GetJobCaseReferListRESTFacade.json"
                                                                             "?_qt=false&_limitCount=2000&jobNo=&jobOffersName_Like=&customerCode=&prefectures_Like=&cityName_Like=&organizationCode=&personResponsibleCode=&jobCategory=&ageTo=&gender=&predeterminedAllowance_hour=&predeterminedAllowance_month=&paymentClassification=&predeterminedAllowance_From=&holidayPossible_Like=&workDayWeekHolidayCondition_In=&necessaryQualifications=&mediumSupplierCode=&contractForm=&proposalRankType=&hiringRank=&postClassified=%E6%8E%B2%E8%BC%89%E4%B8%AD&dormitoriesCompanyHousing=0&foreignerPropriety=0&tattooPropriety=0&historyRefer=0&approvalClassification_IN=%E6%89%BF%E8%AA%8D%E6%B8%88&applicationClassification=&orderClassification=&priorityRank=&orderRemainingNumberPeople_From=&orderRemainingNumberPeople_To=&predeterminedAllowance=&jobRecruitmentStartDate=&jobRecruitmentEndDate=&assignedDueDate_From=&assignedDueDate_To=&workingPeriod=&nearestStation_Like=&jobDetails=&prefecturesKana_Like=&cityNameKana_Like=&approvalStateClassification=%E6%9C%80%E7%B5%82%E6%89%BF%E8%AA%8D&_=1533794896192'"
                                                                             " -H 'Accept-Encoding: gzip, deflate, br'"
                                                                             " -H 'Accept-Language: ja,en-US;q=0.9,en;q=0.8'"
@@ -216,7 +217,7 @@ def csv_download_from_smart(start_time):
                  "%7D%2C"
 
         next_records = subprocess.Popen(["curl -b " + os.getcwd() + "/cookie.txt" \
-                               " -k 'https://talent.metastasys.biz/sinfoniacloud/api/GetjobOffersInfomationCsvRESTFacade.json'" \
+                               " -x http://" + os.environ['PROXY_SERVER'] + ":80 -k 'http://talent.metastasys.biz/sinfoniacloud/api/GetjobOffersInfomationCsvRESTFacade.json'" \
                                " -H 'Connection: keep-alive' " \
                                " -H 'Cache-Control: max-age=0' " \
                                " -H 'Origin: https://talent.metastasys.biz' " \
@@ -800,7 +801,9 @@ def main():
         global JOB_CONVERT_RULE
         JOB_CONVERT_RULE = get_job_convert_rule()
         start_time = datetime.datetime.today().strftime("%Y%m%d%H%M%S")
+        print('csv_download_from_next')
         csv_download_from_next(start_time)
+        print('csv_download_from_smart')
         csv_download_from_smart(start_time)
         csv_make_for_trancom(start_time)
         g_drive_upload_next(start_time)
@@ -814,15 +817,15 @@ def main():
         subject = 'トランコム自動アップロードのスクリプトが異常終了しました'
         body = 'プログラムの実行時にエラーが発生しました。システム管理者にご報告ください。'
         
-        # msg = create_message(FROM_ADDRESS, TO_ADDRESS, BCC, subject, body)
-        # send(FROM_ADDRESS, TO_ADDRESS, msg)
+        msg = create_message(FROM_ADDRESS, TO_ADDRESS, BCC, subject, body)
+        send(FROM_ADDRESS, TO_ADDRESS, msg)
         
-        # requests.post('https://hooks.slack.com/services/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', data=json.dumps({
-        #     'text': subject + "\n" + traceback.format_exc(),
-        #     'username': u'trancom',
-        #     'icon_emoji': u':ghost:',
-        #     'link_names': 1,
-        # }))
+        requests.post('https://hooks.slack.com/services/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', data=json.dumps({
+            'text': subject + "\n" + traceback.format_exc(),
+            'username': u'trancom',
+            'icon_emoji': u':ghost:',
+            'link_names': 1,
+        }))
         return f'Except!!'
 
 if __name__ == "__main__":

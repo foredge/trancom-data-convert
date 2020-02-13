@@ -10,12 +10,9 @@ import glob
 import re
 import datetime
 
-
 JOB_CONVERT_RULE = {}
-FROM_ADDRESS = 'hideyasu.yamaguchi@foredge.co.jp'
-MY_PASSWORD = 'reiri1113'
-# TO_ADDRESS = 'hideyasu.yamaguchi@foredge.co.jp'
-# TO_ADDRESS = 'baitai@foredge.co.jp'
+FROM_ADDRESS = os.environ['FROM_ADDRESS']
+MY_PASSWORD = os.environ['MY_PASSWORD']
 TO_ADDRESS = 'aidan@foredge.co.jp'
 BCC = ''
 SUBJECT = '【要ご確認】ネクスト求人ドットコム連携エラー案件'

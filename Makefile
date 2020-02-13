@@ -7,8 +7,10 @@ up:
 down:
 	docker-compose down
 
-sh:
+psh:
 	docker-compose exec python3 ash
+nsh:
+	docker-compose exec nginx bash
 
 # ログ確認
 logf:
