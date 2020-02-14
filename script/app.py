@@ -19,12 +19,9 @@ from email.utils import formatdate
 import shutil
 import pdb
 from flask import Flask
+import requests
 
 JOB_CONVERT_RULE = {}
-FROM_ADDRESS = os.environ['FROM_ADDRESS']
-MY_PASSWORD = os.environ['MY_PASSWORD']
-TO_ADDRESS = os.environ['TO_ADDRESS']
-BCC = ''
 SUBJECT = 'トランコム自動アップロードが失敗しました。'
 BODY = ''
 
@@ -40,13 +37,15 @@ def send_mail(from_addr, to_addrs, subject, body):
               "text": body})
 
 def send_error_mail(text):
-    to_addr = TO_ADDRESS
-    subject = SUBJECT
-    body = text
+    send_mail(os.environ['FROM_ADDRESS'], os.environ['TO_ADDRESS'], SUBJECT, text)
 
-    msg = create_message(FROM_ADDRESS, to_addr, BCC, subject, body)
-    send(FROM_ADDRESS, to_addr, msg)
-
+def send_slack(text):
+    requests.post(os.environ['SLACK_WEBHOOK_URL'], data=json.dumps({
+        'text': text,
+        'username': u'trancom',
+        'icon_emoji': u':ghost:',
+        'link_names': 1,
+    }))
 
 def checker(start_time):
     with open('csv/trancom/trancom_origin_' + start_time + '.csv', 'r',
@@ -56,13 +55,11 @@ def checker(start_time):
             if row.__len__() == 138:
                 print(row.__len__())
 
-
 def next_login(driver):
     driver.get("https://trancom:sc@manage.4104510.com/manager/login")
     driver.find_element_by_id('ManagerUsername').send_keys(os.environ['NEXT_MANAGER_USER_NAME'])
     driver.find_element_by_id('ManagerPassword').send_keys(os.environ['NEXT_MANAGER_PASSWORD'])
     driver.find_element_by_id("loginButton").click()
-
 
 def csv_upload(start_time):
     print('csv_upload')
@@ -73,7 +70,7 @@ def csv_upload(start_time):
     options.add_argument('--disable-popup-blocking')
     options.add_argument('--window-size=1366,768')
 
-    driver = webdriver.Chrome(chrome_options=options)
+    driver = webdriver.Chrome(options=options)
     # リモートブラウザに接続(開発用)
     # driver = webdriver.Remote(command_executor='http://selenium-hub:4444/wd/hub',desired_capabilities=DesiredCapabilities.CHROME)
     next_login(driver)
@@ -99,7 +96,7 @@ def csv_download_from_next(start_time):
     options.add_argument('--disable-gpu')
     options.add_argument('--disable-popup-blocking')
     options.add_argument('--window-size=1366,768')
-    driver = webdriver.Chrome(chrome_options=options)
+    driver = webdriver.Chrome(options=options)
     # リモートブラウザに接続(開発用)
     # driver = webdriver.Remote(command_executor='http://selenium-hub:4444/wd/hub',desired_capabilities=DesiredCapabilities.CHROME)
 
@@ -119,7 +116,6 @@ def csv_download_from_next(start_time):
     sleep(10)
     driver.close()
     driver.quit()
-
 
 def download_curl_to_smart(start_time):
     os.system("curl -c " + os.getcwd() + "/cookie.txt" + " -d " + os.environ['COOKIEBODY'] + " -x http://" + os.environ['PROXY_SERVER']  + ":80 -k 'http://talent.metastasys.biz/sinfoniacloud/api/Login.json'"
@@ -268,7 +264,6 @@ def csv_make_for_trancom(start_time):
     # start_time = glob.glob('csv/next/*')[0].split('/')[2]
     # start_time = '20190617110509'
     # ----------------------
-
 
     exist_records = exist_records_from_next(start_time)
 
@@ -760,19 +755,17 @@ def g_drive_upload_log(start_time):
         gauth.CommandLineAuth()
         drive = GoogleDrive(gauth)
 
-        folder_id = '1KIjOxPfZRIeLNs_wadmMQz3QE6IMjmCH'
         f = drive.CreateFile({'title': start_time + '_log.csv',
                               'mimeType': 'text/plain',
-                              'parents': [{'kind': 'drive#fileLink', 'id': folder_id}]})
+                              'parents': [{'kind': 'drive#fileLink', 'id': os.environ['GDRIVE_FOLDER_ID']}]})
         f.SetContentFile('log/unsent_recruit_' + start_time + '.log')
         f.Upload()
 
 def get_job_convert_rule():
     scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-    credentials = ServiceAccountCredentials.from_json_keyfile_name('./Foredge-025d2142fa5c.json', scope)
+    credentials = ServiceAccountCredentials.from_json_keyfile_name('./spreadsheet_service_account.json', scope)
     gc = gspread.authorize(credentials)
-    SPREADSHEET_KEY = os.environ['SPREADSHEET_KEY']
-    worksheet = gc.open_by_key(SPREADSHEET_KEY).sheet1
+    worksheet = gc.open_by_key(os.environ['SPREADSHEET_KEY']).sheet1
     before = worksheet.col_values(1)
     after = worksheet.col_values(2)
     return dict(zip(before, after))
@@ -805,17 +798,11 @@ def main():
     except:
         subject = 'トランコム自動アップロードのスクリプトが異常終了しました'
         body = 'プログラムの実行時にエラーが発生しました。システム管理者にご報告ください。'
-        
-        msg = create_message(FROM_ADDRESS, TO_ADDRESS, BCC, subject, body)
-        send(FROM_ADDRESS, TO_ADDRESS, msg)
-        
-        requests.post('https://hooks.slack.com/services/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', data=json.dumps({
-            'text': subject + "\n" + traceback.format_exc(),
-            'username': u'trancom',
-            'icon_emoji': u':ghost:',
-            'link_names': 1,
-        }))
+
+        send_mail(os.environ['FROM_ADDRESS'], os.environ['TO_ADDRESS'], subject, body)
+        send_slack(subject + "\n" + traceback.format_exc())
+
         return f'Except!!'
 
 if __name__ == "__main__":
-    app.run(debug=True,host='0.0.0.0',port=int(8000))
+    app.run(debug=True, host='0.0.0.0', port=int(8000))
