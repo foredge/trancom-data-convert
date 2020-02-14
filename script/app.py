@@ -31,12 +31,8 @@ def send_mail(from_addr, to_addrs, subject, body):
     return requests.post(
         "https://api.mailgun.net/v3/" + os.environ['MAIL_DOMAIN'] + "/messages",
         auth=("api", os.environ['MAILGUN_API_KEY']),
-        # data={"from": from_addr,
-        #       "to": to_addrs,
-        #       "subject": subject,
-        #       "text": body})
-        data={"from": "yamane@foredge.co.jp",
-              "to": "yamane@foredge.co.jp",
+        data={"from": from_addr,
+              "to": to_addrs,
               "subject": subject,
               "text": body})
 
