@@ -30,25 +30,14 @@ BODY = ''
 
 app = Flask(__name__)
 
-def create_message(from_addr, to_addr, bcc_addrs, subject, body):
-    msg = MIMEText(body)
-    msg['Subject'] = subject
-    msg['From'] = 'sys@foredge.co.jp'
-    msg['To'] = to_addr
-    msg['Bcc'] = bcc_addrs
-    msg['Date'] = formatdate()
-    return msg
-
-
-def send(from_addr, to_addrs, msg):
-    smtpobj = smtplib.SMTP('smtp.gmail.com', 587)
-    smtpobj.ehlo()
-    smtpobj.starttls()
-    smtpobj.ehlo()
-    smtpobj.login(FROM_ADDRESS, MY_PASSWORD)
-    smtpobj.sendmail(from_addr, to_addrs, msg.as_string())
-    smtpobj.close()
-
+def send_mail(from_addr, to_addrs, subject, body):
+    return requests.post(
+        "https://api.mailgun.net/v3/" + os.environ['MAIL_DOMAIN'] + "/messages",
+        auth=("api", os.environ['MAILGUN_API_KEY']),
+        data={"from": from_addr,
+              "to": to_addrs,
+              "subject": subject,
+              "text": body})
 
 def send_error_mail(text):
     to_addr = TO_ADDRESS
