@@ -21,11 +21,11 @@ import pdb
 from flask import Flask
 import requests
 
+app = Flask(__name__)
+
 JOB_CONVERT_RULE = {}
 SUBJECT = 'トランコム自動アップロードが失敗しました。'
 BODY = ''
-
-app = Flask(__name__)
 
 def send_mail(from_addr, to_addrs, subject, body):
     return requests.post(

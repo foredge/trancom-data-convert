@@ -33,6 +33,7 @@ RUN apk add --update \
       google-api-python-client \
       google-auth \
       google-auth-httplib2 \
+      google-cloud-storage \
       httplib2 \
       nose \
       oauth2client \
