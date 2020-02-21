@@ -84,7 +84,7 @@ def send_mail(from_addr, to_addrs, subject, body, filename):
 @app.route('/log_mail')
 def main():
     addresses = [
-        'yamane@foredge.co.jp'
+        'iwakuni@foredge.co.jp'
     ]
     # addresses = [
     #     'ta_mori@trancom.co.jp',
