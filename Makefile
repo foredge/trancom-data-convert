@@ -36,6 +36,11 @@ pushgcr:
 	docker build -t asia.gcr.io/single-mix-174909/trancom -f ./script/Dockerfile ./script
 	docker push asia.gcr.io/single-mix-174909/trancom
 
+pushgcrmail:
+	gcloud config set project single-mix-174909
+	docker build -t asia.gcr.io/single-mix-174909/trancom-send-mail -f ./script/Dockerfile ./script
+	docker push asia.gcr.io/single-mix-174909/trancom-send-mail
+
 # CloudRunにdeploy
 deployCloudRun:
 	gcloud beta run deploy --image asia.gcr.io/single-mix-174909/trancom
