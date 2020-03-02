@@ -5,7 +5,6 @@ from email import encoders, utils
 from email.mime.base import MIMEBase
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from flask import Flask
 import glob
 import mimetypes
 import smtplib
@@ -14,12 +13,7 @@ import os
 import pdb
 import re
 import requests
-
 import time
-
-import gcs_download_and_delete
-
-app = Flask(__name__)
 
 FROM_ADDRESS = os.environ['FROM_ADDRESS']
 SUBJECT = '【要ご確認】ネクスト求人ドットコム連携エラー案件'
@@ -54,10 +48,7 @@ def make_send_file(file_path):
     with open(file_path , mode='w') as f:   # 書き込み
         f.write(send_body)
 
-
-@app.route('/send_log_mail')
 def main():
-    gcs_download_and_delete.main()
     try:
         to_addresses = [
             'iwakuni@foredge.co.jp',
@@ -69,7 +60,7 @@ def main():
         #     'hiro_watanabe@trancom.co.jp',
         #     'baitai@foredge.co.jp'
         # ]
-        file_path = './log_mails/' + format(datetime.today(), '%Y-%m-%d') + '.txt'
+        file_path = './send_mails/' + format(datetime.today(), '%Y-%m-%d') + '.txt'
 
         make_send_file(file_path)
 
@@ -79,6 +70,5 @@ def main():
     except:
         return 'FAILD'
 
-
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=int(8000))
+if __name__ == "__main__":
+    main()

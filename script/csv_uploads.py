@@ -19,10 +19,12 @@ from email.utils import formatdate
 import shutil
 import pdb
 import requests
+from google.cloud import storage
 
 JOB_CONVERT_RULE = {}
 SUBJECT = 'トランコム自動アップロードが失敗しました。'
 BODY = ''
+BUCKET_NAME = 'trancom-data-convert'
 
 def send_mail(from_addr, to_addrs, subject, body):
     return requests.post(
@@ -221,11 +223,12 @@ def csv_download_from_smart(start_time):
         # リクエストをした後にエラーが帰ってきた場合
         # 4/18, 19に2699-0006が上がってこなかった件の調査
         # しかし4/22の時点で該当案件が引っかからなくなってしまった
+        formated_start_time = datetime.datetime.strptime(start_time, "%Y%m%d%H%M%S").strftime("%Y年%m月%d日%H時%M分")
         if 'errorInfo' in next_records[0]:
             with open('log/unsent_recruit_' + start_time + '.log', 'a') as log_f:
                 log_f.write("お仕事No: " + urllib.parse.quote(record['jobNo']))
                 log_f.write("\r\n")
-                log_f.write("smartから求人を取得することができなかったため追加されませんでした。")
+                log_f.write("smartから求人を取得することができなかったため追加されませんでした。 " + formated_start_time)
                 log_f.write("\r\n")
                 log_f.write("\r\n")
 
@@ -774,31 +777,49 @@ def insert_log(start_time, row):
             if i != len(row) - 1:
                 log_f.write(",")
 
+# GCSにファイルアップロードして削除
+def upload_file_to_gcs(start_time):
+    start_time = '20200228061011'
+    local_file_name = "unsent_recruit_" + start_time + ".log"
+    local_file_path = "./log/" + local_file_name
+    destination_blob_name = 'log/' + local_file_name
+    if os.path.exists(local_file_path):
+        bucket = storage.Client().get_bucket(BUCKET_NAME)
+        data = bucket.blob(destination_blob_name)
+        data.upload_from_filename(local_file_path)
+        print('File {} uploaded to {}.'.format(
+            local_file_name,
+            destination_blob_name))
+        os.remove(local_file_path)
+        print('{} File deleted .'.format(local_file_name))
+
 def main():
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = 'spreadsheet_service_account.json'
+    # 日本時間に合わせる
+    start_time = (datetime.datetime.now() + datetime.timedelta(hours=9)).strftime("%Y%m%d%H%M%S")
     try:
         global JOB_CONVERT_RULE
         JOB_CONVERT_RULE = get_job_convert_rule()
         start_time = datetime.datetime.today().strftime("%Y%m%d%H%M%S")
-        print('csv_download_from_next')
-        csv_download_from_next(start_time)
-        print('csv_download_from_smart')
-        csv_download_from_smart(start_time)
-        csv_make_for_trancom(start_time)
-        g_drive_upload_next(start_time)
-        g_drive_upload_smart(start_time)
-        g_drive_upload_trancom(start_time)
-        g_drive_upload_log(start_time)
-        csv_upload(start_time)
+        # print('csv_download_from_next')
+        # csv_download_from_next(start_time)
+        # print('csv_download_from_smart')
+        # csv_download_from_smart(start_time)
+        upload_file_to_gcs(start_time)
+        # csv_make_for_trancom(start_time)
+        # g_drive_upload_next(start_time)
+        # g_drive_upload_smart(start_time)
+        # g_drive_upload_trancom(start_time)
+        # g_drive_upload_log(start_time)
+        # csv_upload(start_time)
         print('completed')
         return f'ok!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
     except:
-        subject = 'トランコム自動アップロードのスクリプトが異常終了しました'
-        body = 'プログラムの実行時にエラーが発生しました。システム管理者にご報告ください。'
-
-        send_mail(os.environ['FROM_ADDRESS'], os.environ['TO_ADDRESS'], subject, body)
-        send_slack(subject + "\n" + traceback.format_exc())
-
+        # subject = 'トランコム自動アップロードのスクリプトが異常終了しました'
+        # body = 'プログラムの実行時にエラーが発生しました。システム管理者にご報告ください。'
+        # send_mail(os.environ['FROM_ADDRESS'], os.environ['TO_ADDRESS'], subject, body)
+        # send_slack(subject + "\n" + traceback.format_exc())
         return f'Except!!'
 
 if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0', port=int(8000))
+    main()

@@ -2,6 +2,7 @@ from flask import Flask
 
 import csv_uploads
 import send_log_mail
+import gcs_download_and_delete
 
 app = Flask(__name__)
 
@@ -16,6 +17,7 @@ def main():
 @app.route('/mail')
 def mail():
     try:
+        gcs_download_and_delete.main()
         send_log_mail.main()
         return f'mail ok'
     except:
