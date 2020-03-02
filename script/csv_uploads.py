@@ -779,7 +779,6 @@ def insert_log(start_time, row):
 
 # GCSにファイルアップロードして削除
 def upload_file_to_gcs(start_time):
-    start_time = '20200228061011'
     local_file_name = "unsent_recruit_" + start_time + ".log"
     local_file_path = "./log/" + local_file_name
     destination_blob_name = 'log/' + local_file_name
@@ -801,24 +800,24 @@ def main():
         global JOB_CONVERT_RULE
         JOB_CONVERT_RULE = get_job_convert_rule()
         start_time = datetime.datetime.today().strftime("%Y%m%d%H%M%S")
-        # print('csv_download_from_next')
-        # csv_download_from_next(start_time)
-        # print('csv_download_from_smart')
-        # csv_download_from_smart(start_time)
+        print('csv_download_from_next')
+        csv_download_from_next(start_time)
+        print('csv_download_from_smart')
+        csv_download_from_smart(start_time)
         upload_file_to_gcs(start_time)
-        # csv_make_for_trancom(start_time)
-        # g_drive_upload_next(start_time)
-        # g_drive_upload_smart(start_time)
-        # g_drive_upload_trancom(start_time)
-        # g_drive_upload_log(start_time)
-        # csv_upload(start_time)
+        csv_make_for_trancom(start_time)
+        g_drive_upload_next(start_time)
+        g_drive_upload_smart(start_time)
+        g_drive_upload_trancom(start_time)
+        g_drive_upload_log(start_time)
+        csv_upload(start_time)
         print('completed')
         return f'ok!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
     except:
-        # subject = 'トランコム自動アップロードのスクリプトが異常終了しました'
-        # body = 'プログラムの実行時にエラーが発生しました。システム管理者にご報告ください。'
-        # send_mail(os.environ['FROM_ADDRESS'], os.environ['TO_ADDRESS'], subject, body)
-        # send_slack(subject + "\n" + traceback.format_exc())
+        subject = 'トランコム自動アップロードのスクリプトが異常終了しました'
+        body = 'プログラムの実行時にエラーが発生しました。システム管理者にご報告ください。'
+        send_mail(os.environ['FROM_ADDRESS'], os.environ['TO_ADDRESS'], subject, body)
+        send_slack(subject + "\n" + traceback.format_exc())
         return f'Except!!'
 
 if __name__ == "__main__":
