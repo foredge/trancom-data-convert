@@ -223,12 +223,12 @@ def csv_download_from_smart(start_time):
         # リクエストをした後にエラーが帰ってきた場合
         # 4/18, 19に2699-0006が上がってこなかった件の調査
         # しかし4/22の時点で該当案件が引っかからなくなってしまった
-        formated_start_time = datetime.datetime.strptime(start_time, "%Y%m%d%H%M%S").strftime("%Y年%m月%d日%H時%M分")
+        formatted_start_time = datetime.datetime.strptime(start_time, "%Y%m%d%H%M%S").strftime("%Y年%m月%d日%H時%M分")
         if 'errorInfo' in next_records[0]:
             with open('log/unsent_recruit_' + start_time + '.log', 'a') as log_f:
                 log_f.write("お仕事No: " + urllib.parse.quote(record['jobNo']))
                 log_f.write("\r\n")
-                log_f.write("smartから求人を取得することができなかったため追加されませんでした。 " + formated_start_time)
+                log_f.write("smartから求人を取得することができなかったため追加されませんでした。 " + formatted_start_time)
                 log_f.write("\r\n")
                 log_f.write("\r\n")
 
@@ -285,13 +285,14 @@ def csv_make_for_trancom(start_time):
                 try:
                     insert_log(start_time, row)
                     record = csv_converter(row, exist_records)
-                    # 見出し、職種が空の場合レコードを追加しない
+                    # 見出し、職種、雇用時間が空の場合レコードを追加しない
                     if record[7] == '' or record[13] == '' or record[62] == '':
+                        formatted_start_time = datetime.datetime.strptime(start_time, "%Y%m%d%H%M%S").strftime("%Y年%m月%d日%H時%M分")
                         with open('log/unsent_recruit_' + start_time + '.log', 'a') as log_f:
                             log_f.write("お仕事No: " + row[0])
                             log_f.write("\r\n")
                             if record[7] == '':
-                                log_f.write("見出しが空のためレコードは追加されませんでした。")
+                                log_f.write("見出しが空のためレコードは追加されませんでした。 " + formatted_start_time)
                                 log_f.write("\r\n")
                                 log_f.write("\r\n")
                             if record[13] == '':
@@ -299,11 +300,11 @@ def csv_make_for_trancom(start_time):
                                 log_f.write("\r\n")
                                 log_f.write("職種詳細2: " + row[3])
                                 log_f.write("\r\n")
-                                log_f.write("職種変換表にないためレコードは追加されませんでした。")
+                                log_f.write("職種変換表にないためレコードは追加されませんでした。 " + formatted_start_time)
                                 log_f.write("\r\n")
                                 log_f.write("\r\n")
                             if record[62] == '':
-                                log_f.write("雇用時間がないためレコードは追加されませんでした。")
+                                log_f.write("雇用時間がないためレコードは追加されませんでした。 " + formatted_start_time)
                                 log_f.write("\r\n")
                                 log_f.write("\r\n")
                         continue
@@ -804,8 +805,8 @@ def main():
         csv_download_from_next(start_time)
         print('csv_download_from_smart')
         csv_download_from_smart(start_time)
-        upload_file_to_gcs(start_time)
         csv_make_for_trancom(start_time)
+        upload_file_to_gcs(start_time)
         g_drive_upload_next(start_time)
         g_drive_upload_smart(start_time)
         g_drive_upload_trancom(start_time)
