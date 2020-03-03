@@ -8,3 +8,6 @@ oauth2client == 4.1.2
 pandas == 0.23.3
 selenium == 3.11.0
 gspread
+datetime
+date
+timedelta

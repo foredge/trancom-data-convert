@@ -9,3 +9,7 @@ script/csv/trancom/*
 cookie.txt
 script/log/*
 !script/log/.keep
+script/logs/*
+!script/logs/.keep
+script/send_mails/*
+!script/send_mails/.keep
