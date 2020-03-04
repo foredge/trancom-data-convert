@@ -51,7 +51,7 @@ def make_send_file(file_path):
 def main():
     try:
         to_addresses = [
-            gadmin@foredge.co.jp
+            'gadmin@foredge.co.jp'
         ]
         # addresses = [
         #     'ta_mori@trancom.co.jp',
