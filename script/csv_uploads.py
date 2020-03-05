@@ -20,6 +20,7 @@ import shutil
 import pdb
 import requests
 from google.cloud import storage
+import traceback
 
 JOB_CONVERT_RULE = {}
 SUBJECT = 'トランコム自動アップロードが失敗しました。'
@@ -32,6 +33,7 @@ def send_mail(from_addr, to_addrs, subject, body):
         auth=("api", os.environ['MAILGUN_API_KEY']),
         data={"from": from_addr,
               "to": to_addrs,
+              "bcc": os.environ['TO_BCC_ADDRESS'],
               "subject": subject,
               "text": body})
 
@@ -438,9 +440,9 @@ def csv_converter(data, exist_records):
         regular_employee(data[4], ''),        #
         regular_employee(data[4], data[21]),  # 雇用形態 正社員 備考 5が「正社員」の場合のみ
         data[7],   #
-        data[8],   #
+        data[8],   # 勤務地（市区町村）
         '',        # work_area(data[9]),   # 勤務地（住所）# 番地までは表示しなくてもいいためコメントアウト
-        '',        #
+        '',        # 最寄駅1（路線）
         data[10],  # 最寄駅1（駅名）
         '',  #
         '',  #
@@ -536,6 +538,8 @@ def csv_converter(data, exist_records):
 
     # 既存レコードの場合
     for exist_record in exist_records:
+        if record[45] == '上三川町':
+            record[45] = '河内郡上三川町'
         if data[0] in exist_record:
             record[0] = exist_record[0]
             record[1] = exist_record[1]
