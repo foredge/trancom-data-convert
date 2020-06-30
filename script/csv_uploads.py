@@ -119,28 +119,42 @@ def csv_download_from_next(start_time):
     driver.quit()
 
 def download_curl_to_smart(start_time):
-    os.system("curl -c " + os.getcwd() + "/cookie.txt" + " -d " + os.environ['COOKIEBODY'] + " -x http://" + os.environ['PROXY_SERVER']  + ":80 -k 'http://talent.metastasys.biz/sinfoniacloud/api/Login.json'"
+    print("start login")
+    curl_command = ("curl -c ./cookie.txt 'https://talent.metastasys.biz/sinfoniacloud/api/Login.json'"
+                    " -H 'Connection: keep-alive'"
+                    " -H 'Accept: application/json, text/javascript, */*; q=0.01'"
+                    " -H 'X-Requested-With: XMLHttpRequest'"
+                    " -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36'"
+                    " -H 'Content-Type: application/json'"
                                                          " -H 'Origin: https://talent.metastasys.biz'"
-                                                         " -H 'Accept-Encoding: gzip, deflate, br'"
+                    " -H 'Sec-Fetch-Site: same-origin'"
+                    " -H 'Sec-Fetch-Mode: cors'"
+                    " -H 'Sec-Fetch-Dest: empty'"
+                    " -H 'Referer: https://talent.metastasys.biz/appl/menu.html'"
                                                          " -H 'Accept-Language: ja,en-US;q=0.9,en;q=0.8'"
-                                                         " -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36'"
-                                                         " -H 'Content-Type: application/json'"
-                                                         " -H 'Accept: application/json, text/javascript, */*; q=0.01'"
-                                                         " -H 'Referer: https://talent.metastasys.biz/appl/menu.html'"
-                                                         " -H 'X-Requested-With: XMLHttpRequest'"
-                                                         " -H 'Connection: keep-alive'"
-                                                         " --compressed")
+                    " --data-binary $'{\"body\":{\"companyCD\":\"SMART\",\"userID\":\"" + os.environ['SMART_USER'] + "\",\"password\":\"" + os.environ['SMART_PASS'] + "\"}}\r\n'"
+                    " --compressed -v")
+    # print(curl_command)
+    os.system(curl_command)
+    print("end login")
 
-    curl_data = subprocess.Popen(["curl -b " + os.getcwd() + "/cookie.txt" + " -x http://" + os.environ['PROXY_SERVER'] + ":80 -k 'http://talent.metastasys.biz/sinfoniacloud/api/GetJobCaseReferListRESTFacade.json"
-                                                                            "?_qt=false&_limitCount=2000&jobNo=&jobOffersName_Like=&customerCode=&prefectures_Like=&cityName_Like=&organizationCode=&personResponsibleCode=&jobCategory=&ageTo=&gender=&predeterminedAllowance_hour=&predeterminedAllowance_month=&paymentClassification=&predeterminedAllowance_From=&holidayPossible_Like=&workDayWeekHolidayCondition_In=&necessaryQualifications=&mediumSupplierCode=&contractForm=&proposalRankType=&hiringRank=&postClassified=%E6%8E%B2%E8%BC%89%E4%B8%AD&dormitoriesCompanyHousing=0&foreignerPropriety=0&tattooPropriety=0&historyRefer=0&approvalClassification_IN=%E6%89%BF%E8%AA%8D%E6%B8%88&applicationClassification=&orderClassification=&priorityRank=&orderRemainingNumberPeople_From=&orderRemainingNumberPeople_To=&predeterminedAllowance=&jobRecruitmentStartDate=&jobRecruitmentEndDate=&assignedDueDate_From=&assignedDueDate_To=&workingPeriod=&nearestStation_Like=&jobDetails=&prefecturesKana_Like=&cityNameKana_Like=&approvalStateClassification=%E6%9C%80%E7%B5%82%E6%89%BF%E8%AA%8D&_=1533794896192'"
-                                                                            " -H 'Accept-Encoding: gzip, deflate, br'"
+    print("start download")
+    curl_command = ("curl -b ./cookie.txt 'https://talent.metastasys.biz/sinfoniacloud/api/SearchApprovedAnken.json"
+                    "?_qt=false&_ns=SMART.facade.anken&_limitCount=1&JOB_NO=&ANKEN_NAME_LIKE=&COMPANY_NO=&PREFECTURE_LIKE=&CITY_LIKE=&OFFICE_NO=&OFFICE_STAFF_NO=&OCCUPATION_CATEGORY=&AGE_MAX=&GENDER=&PREDETERMINED_ALLOWANCE_HOUR=&PREDETERMINED_ALLOWANCE_MONTH=&HOLIDAY_DESCRIPTION_LIKE=&DAY_SHIFT_ONLY=0&NIGHT_SHIFT_ONLY=0&TWO_SHIFT=0&THREE_SHIFT=0&OTHER=0&QUALIFICATION=&MEDIA_AGENCY_NO=&MEDIA_AGENCY_NAME=&EMPLOYMENT_TYPE=&ANKEN_RANK=&HIRING_RANK=&POST_TYPE=&DORMITORY=0&DORMITORY_FEE_SUBSIDY=&FOREIGN_NATIONALITY_OK=0&TATTOO_OK=0'"
+                    " -H 'Connection: keep-alive'"
+                                                         " -H 'Accept: application/json, text/javascript, */*; q=0.01'"
+                    " -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36'"
+                                                         " -H 'X-Requested-With: XMLHttpRequest'"
+                    " -H 'Sec-Fetch-Site: same-origin'"
+                    " -H 'Sec-Fetch-Mode: cors'"
+                    " -H 'Sec-Fetch-Dest: empty'"
+                    " -H 'Referer: https://talent.metastasys.biz/appl/html/anken/AnkenList.html'"
                                                                             " -H 'Accept-Language: ja,en-US;q=0.9,en;q=0.8'"
-                                                                            " -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.84 Safari/537.36'"
-                                                                            " -H 'Accept: application/json, text/javascript, */*; q=0.01' "
-                                                                            " -H 'Referer: https://talent.metastasys.biz/appl/html/jobOffers/JobCaseRefer.html'"
-                                                                            " -H 'X-Requested-With: XMLHttpRequest' "
-                                                                            " -H 'Connection: keep-alive'"
-                                                                            " --compressed"], stdout=subprocess.PIPE, shell=True).stdout.read()
+                    " --compressed -v")
+    # print(curl_command)
+    curl_data = subprocess.Popen([curl_command], stdout=subprocess.PIPE, shell=True).stdout.read()
+    print("end download")
+    print(curl_data)
     return curl_data
 
 def csv_download_from_smart(start_time):
