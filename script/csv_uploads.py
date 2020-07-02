@@ -118,8 +118,7 @@ def csv_download_from_next(start_time):
     driver.quit()
 
 def download_curl_to_smart(start_time):
-    print("start login")
-    curl_command = ("curl -c ./cookie.txt 'https://talent.metastasys.biz/sinfoniacloud/api/Login.json'"
+    curl_command = ("curl -c ./cookie.txt -x " + os.environ['PROXY_SERVER'] + " 'https://talent.metastasys.biz/sinfoniacloud/api/Login.json'"
                     " -H 'Connection: keep-alive'"
                     " -H 'Accept: application/json, text/javascript, */*; q=0.01'"
                     " -H 'X-Requested-With: XMLHttpRequest'"
@@ -139,7 +138,7 @@ def download_curl_to_smart(start_time):
     print("start download")
     # 検索オプション
     #   掲載区分：掲載中 -> POST_TYPE=0
-    curl_command = ("curl -b ./cookie.txt 'https://talent.metastasys.biz/sinfoniacloud/api/SearchApprovedAnken.json"
+    curl_command = ("curl -b ./cookie.txt -x " + os.environ['PROXY_SERVER'] + " 'https://talent.metastasys.biz/sinfoniacloud/api/SearchApprovedAnken.json"
                     "?_qt=false&_ns=SMART.facade.anken&_limitCount=2000&JOB_NO=&ANKEN_NAME_LIKE=&COMPANY_NO=&PREFECTURE_LIKE=&CITY_LIKE=&OFFICE_NO=&OFFICE_STAFF_NO=&OCCUPATION_CATEGORY=&AGE_MAX=&GENDER=&PREDETERMINED_ALLOWANCE_HOUR=&PREDETERMINED_ALLOWANCE_MONTH=&HOLIDAY_DESCRIPTION_LIKE=&DAY_SHIFT_ONLY=0&NIGHT_SHIFT_ONLY=0&TWO_SHIFT=0&THREE_SHIFT=0&OTHER=0&QUALIFICATION=&MEDIA_AGENCY_NO=&MEDIA_AGENCY_NAME=&EMPLOYMENT_TYPE=&ANKEN_RANK=&HIRING_RANK=&POST_TYPE=0&DORMITORY=0&DORMITORY_FEE_SUBSIDY=&FOREIGN_NATIONALITY_OK=0&TATTOO_OK=0'"
                     " -H 'Connection: keep-alive'"
                     " -H 'Accept: application/json, text/javascript, */*; q=0.01'"
@@ -167,7 +166,7 @@ def csv_download_from_smart(start_time):
         # CSVファイルとしてダウンロードするには、クライアントからデータを渡してあげないといけない
         # 検索で拾ったリストを1件ずつ処理
         req_record = urllib.parse.quote(str(record))
-        curl_command = ("curl -b ./cookie.txt 'https://talent.metastasys.biz/sinfoniacloud/api/OutputAnkenInformation.json'"
+        curl_command = ("curl -b ./cookie.txt -x " + os.environ['PROXY_SERVER'] + " 'https://talent.metastasys.biz/sinfoniacloud/api/OutputAnkenInformation.json'"
                         " -H 'Connection: keep-alive'"
                         " -H 'Cache-Control: max-age=0'"
                         " -H 'Upgrade-Insecure-Requests: 1'"
