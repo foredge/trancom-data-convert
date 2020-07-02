@@ -118,6 +118,7 @@ def csv_download_from_next(start_time):
     driver.quit()
 
 def download_curl_to_smart(start_time):
+    print("Login to SMART management site.")
     curl_command = ("curl -c ./cookie.txt -x " + os.environ['PROXY_SERVER'] + " 'https://talent.metastasys.biz/sinfoniacloud/api/Login.json'"
                     " -H 'Connection: keep-alive'"
                     " -H 'Accept: application/json, text/javascript, */*; q=0.01'"
@@ -135,7 +136,7 @@ def download_curl_to_smart(start_time):
     os.system(curl_command)
     print("end login")
 
-    print("start download")
+    print("Get the list of recruit data.")
     # 検索オプション
     #   掲載区分：掲載中 -> POST_TYPE=0
     curl_command = ("curl -b ./cookie.txt -x " + os.environ['PROXY_SERVER'] + " 'https://talent.metastasys.biz/sinfoniacloud/api/SearchApprovedAnken.json"
@@ -151,7 +152,6 @@ def download_curl_to_smart(start_time):
                     " -H 'Accept-Language: ja,en-US;q=0.9,en;q=0.8'"
                     " --compressed -s")
     curl_data = subprocess.Popen([curl_command], stdout=subprocess.PIPE, shell=True).stdout.read()
-    print("end download")
     return curl_data
 
 def csv_download_from_smart(start_time):
@@ -163,8 +163,8 @@ def csv_download_from_smart(start_time):
     records = json.loads(download_curl_to_smart(start_time))
 
     for i, record in enumerate(records['body']['_obj0']):
-        # CSVファイルとしてダウンロードするには、クライアントからデータを渡してあげないといけない
-        # 検索で拾ったリストを1件ずつ処理
+        # 各求人をCSVファイルとしてダウンロード
+        # 一覧で取得したデータをサーバに渡してあげないといけないのでURLエンコードしてリクエストに付加する
         req_record = urllib.parse.quote(str(record))
         curl_command = ("curl -b ./cookie.txt -x " + os.environ['PROXY_SERVER'] + " 'https://talent.metastasys.biz/sinfoniacloud/api/OutputAnkenInformation.json'"
                         " -H 'Connection: keep-alive'"
@@ -188,8 +188,7 @@ def csv_download_from_smart(start_time):
                         "_obj0%22%3A%5B" + req_record +
                         "%5D%7D'"
                         " --compressed -s")
-        # print(curl_command)
-        print("downloading data JOB_NO: " + record['JOB_NO'])
+        print("Downloading recruit detail JOB_NO: " + record['JOB_NO'])
         next_records = subprocess.Popen([curl_command],stdout=subprocess.PIPE, shell=True).stdout.read().decode('utf-8').split('\n', 1)
 
         # リクエストをした後にエラーが帰ってきた場合
