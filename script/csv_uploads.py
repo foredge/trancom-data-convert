@@ -63,7 +63,6 @@ def next_login(driver):
     driver.find_element_by_id("loginButton").click()
 
 def csv_upload(start_time):
-    print('csv_upload')
     options = Options()
     options.add_argument('--headless')
     options.add_argument('--no-sandbox')
@@ -126,12 +125,12 @@ def download_curl_to_smart(start_time):
                     " -H 'X-Requested-With: XMLHttpRequest'"
                     " -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36'"
                     " -H 'Content-Type: application/json'"
-                                                         " -H 'Origin: https://talent.metastasys.biz'"
+                    " -H 'Origin: https://talent.metastasys.biz'"
                     " -H 'Sec-Fetch-Site: same-origin'"
                     " -H 'Sec-Fetch-Mode: cors'"
                     " -H 'Sec-Fetch-Dest: empty'"
                     " -H 'Referer: https://talent.metastasys.biz/appl/menu.html'"
-                                                         " -H 'Accept-Language: ja,en-US;q=0.9,en;q=0.8'"
+                    " -H 'Accept-Language: ja,en-US;q=0.9,en;q=0.8'"
                     " --data-binary $'{\"body\":{\"companyCD\":\"SMART\",\"userID\":\"" + os.environ['SMART_USER'] + "\",\"password\":\"" + os.environ['SMART_PASS'] + "\"}}\r\n'"
                     " --compressed -s")
     os.system(curl_command)
@@ -143,14 +142,14 @@ def download_curl_to_smart(start_time):
     curl_command = ("curl -b ./cookie.txt 'https://talent.metastasys.biz/sinfoniacloud/api/SearchApprovedAnken.json"
                     "?_qt=false&_ns=SMART.facade.anken&_limitCount=2000&JOB_NO=&ANKEN_NAME_LIKE=&COMPANY_NO=&PREFECTURE_LIKE=&CITY_LIKE=&OFFICE_NO=&OFFICE_STAFF_NO=&OCCUPATION_CATEGORY=&AGE_MAX=&GENDER=&PREDETERMINED_ALLOWANCE_HOUR=&PREDETERMINED_ALLOWANCE_MONTH=&HOLIDAY_DESCRIPTION_LIKE=&DAY_SHIFT_ONLY=0&NIGHT_SHIFT_ONLY=0&TWO_SHIFT=0&THREE_SHIFT=0&OTHER=0&QUALIFICATION=&MEDIA_AGENCY_NO=&MEDIA_AGENCY_NAME=&EMPLOYMENT_TYPE=&ANKEN_RANK=&HIRING_RANK=&POST_TYPE=0&DORMITORY=0&DORMITORY_FEE_SUBSIDY=&FOREIGN_NATIONALITY_OK=0&TATTOO_OK=0'"
                     " -H 'Connection: keep-alive'"
-                                                         " -H 'Accept: application/json, text/javascript, */*; q=0.01'"
+                    " -H 'Accept: application/json, text/javascript, */*; q=0.01'"
                     " -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36'"
-                                                         " -H 'X-Requested-With: XMLHttpRequest'"
+                    " -H 'X-Requested-With: XMLHttpRequest'"
                     " -H 'Sec-Fetch-Site: same-origin'"
                     " -H 'Sec-Fetch-Mode: cors'"
                     " -H 'Sec-Fetch-Dest: empty'"
                     " -H 'Referer: https://talent.metastasys.biz/appl/html/anken/AnkenList.html'"
-                                                                            " -H 'Accept-Language: ja,en-US;q=0.9,en;q=0.8'"
+                    " -H 'Accept-Language: ja,en-US;q=0.9,en;q=0.8'"
                     " --compressed -s")
     curl_data = subprocess.Popen([curl_command], stdout=subprocess.PIPE, shell=True).stdout.read()
     print("end download")
@@ -206,13 +205,10 @@ def csv_download_from_smart(start_time):
                 log_f.write("\r\n")
                 log_f.write("\r\n")
 
-
         with open('csv/smart/smart_origin_' + start_time + '.csv', 'a') as f:
             insert_record = []
             for index, next_record in enumerate(next_records):
-                if index == 0:
-                    continue
-                if next_record == '':
+                if index == 0 or next_record == '':
                     continue
                 insert_record += next_record.split('","')
                 insert_record[0] = insert_record[0][1:]
@@ -252,9 +248,7 @@ def csv_make_for_trancom(start_time):
             with open('log/insert_' + start_time + '.log', 'a') as log_f:
                 log_f.write("smartからnextの変換処理\n")
             for i, row in enumerate(reader):
-                if (i == 0):
-                    continue
-                if (row.__len__() == 0):
+                if i == 0 or row.__len__() == 0:
                     continue
                 try:
                     insert_log(start_time, row)
@@ -298,17 +292,13 @@ def csv_make_for_trancom(start_time):
         with open('log/insert_' + start_time + '.log', 'a') as log_f:
             log_f.write("非掲載既存求人の処理\n")
         for next_i, next_row in enumerate(next_reader):
-            if (next_i == 0):
-                continue
-            if (next_row.__len__() == 0):
+            if next_i == 0 or next_row.__len__() == 0:
                 continue
             with open('csv/smart/smart_origin_' + start_time + '.csv', 'r') as smart_f:
                 smart_reader = csv.reader(smart_f)
                 exist_flag = False
                 for smart_i, smart_row in enumerate(smart_reader):
-                    if (smart_i == 0):
-                        continue
-                    if (smart_row.__len__() == 0):
+                    if smart_i == 0 or smart_row.__len__() == 0:
                         continue
                     insert_log(start_time, smart_row)
                     if smart_row[0] == next_row[104]:
@@ -331,12 +321,11 @@ def csv_make_for_trancom(start_time):
         with open('log/insert_' + start_time + '.log', 'a') as log_f:
             log_f.write("nextのまだ取り込まれていないレコードの処理\n")
         for trancom_i, trancom_row in enumerate(trancom_reader):
-            if (trancom_i == 0):
-                continue
-            if (trancom_row.__len__() == 0):
+            if trancom_i == 0 or trancom_row.__len__() == 0:
                 continue
             insert_log(start_time, trancom_row)
             records.append(trancom_row[104])
+
     # recordsの中にあげる用のcsvの中身が入った
     insert_records = []
     with open('csv/next/' + start_time + '/job_' + start_time[:8] + '.csv', 'r', encoding='shift_jisx0213') as next_f:
@@ -344,9 +333,7 @@ def csv_make_for_trancom(start_time):
         with open('log/insert_' + start_time + '.log', 'a') as log_f:
             log_f.write("next_csvの作成\n")
         for next_i, next_row in enumerate(next_reader):
-            if (next_i == 0):
-                continue
-            if (next_row.__len__() == 0):
+            if next_i == 0 or next_row.__len__() == 0:
                 continue
             insert_log(start_time, next_row)
             exist_flag = False
@@ -355,6 +342,7 @@ def csv_make_for_trancom(start_time):
                     exist_flag = True
             if exist_flag == False:
                 insert_records.append(next_row)
+
     with open('csv/trancom/trancom_origin_' + start_time + '.csv', 'a', encoding='shift_jisx0213') as trancom_f:
         writer = csv.writer(trancom_f, lineterminator='\n')
         with open('log/insert_' + start_time + '.log', 'a') as log_f:
@@ -777,23 +765,27 @@ def main():
     try:
         global JOB_CONVERT_RULE
         JOB_CONVERT_RULE = get_job_convert_rule()
-        start_time = datetime.datetime.today().strftime("%Y%m%d%H%M%S")
         print('csv_download_from_next')
         csv_download_from_next(start_time)
         print('csv_download_from_smart')
         csv_download_from_smart(start_time)
+        print('csv_make_for_trancom')
         csv_make_for_trancom(start_time)
+        print('upload_file_to_gcs')
         upload_file_to_gcs(start_time)
+        print('g_drive_upload files')
         g_drive_upload_next(start_time)
         g_drive_upload_smart(start_time)
         g_drive_upload_trancom(start_time)
         g_drive_upload_log(start_time)
+        print('csv_upload')
         csv_upload(start_time)
-        print('completed')
+        print('All process completed')
         return f'ok!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
     except:
         subject = 'トランコム自動アップロードのスクリプトが異常終了しました'
         body = 'プログラムの実行時にエラーが発生しました。システム管理者にご報告ください。'
+        print(traceback.format_exc())
         send_mail(os.environ['FROM_ADDRESS'], os.environ['TO_ADDRESS'], subject, body)
         send_slack(subject + "\n" + traceback.format_exc())
         return f'Except!!'
