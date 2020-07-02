@@ -133,14 +133,15 @@ def download_curl_to_smart(start_time):
                     " -H 'Referer: https://talent.metastasys.biz/appl/menu.html'"
                                                          " -H 'Accept-Language: ja,en-US;q=0.9,en;q=0.8'"
                     " --data-binary $'{\"body\":{\"companyCD\":\"SMART\",\"userID\":\"" + os.environ['SMART_USER'] + "\",\"password\":\"" + os.environ['SMART_PASS'] + "\"}}\r\n'"
-                    " --compressed -v")
-    # print(curl_command)
+                    " --compressed -s")
     os.system(curl_command)
     print("end login")
 
     print("start download")
+    # 検索オプション
+    #   掲載区分：掲載中 -> POST_TYPE=0
     curl_command = ("curl -b ./cookie.txt 'https://talent.metastasys.biz/sinfoniacloud/api/SearchApprovedAnken.json"
-                    "?_qt=false&_ns=SMART.facade.anken&_limitCount=1&JOB_NO=&ANKEN_NAME_LIKE=&COMPANY_NO=&PREFECTURE_LIKE=&CITY_LIKE=&OFFICE_NO=&OFFICE_STAFF_NO=&OCCUPATION_CATEGORY=&AGE_MAX=&GENDER=&PREDETERMINED_ALLOWANCE_HOUR=&PREDETERMINED_ALLOWANCE_MONTH=&HOLIDAY_DESCRIPTION_LIKE=&DAY_SHIFT_ONLY=0&NIGHT_SHIFT_ONLY=0&TWO_SHIFT=0&THREE_SHIFT=0&OTHER=0&QUALIFICATION=&MEDIA_AGENCY_NO=&MEDIA_AGENCY_NAME=&EMPLOYMENT_TYPE=&ANKEN_RANK=&HIRING_RANK=&POST_TYPE=&DORMITORY=0&DORMITORY_FEE_SUBSIDY=&FOREIGN_NATIONALITY_OK=0&TATTOO_OK=0'"
+                    "?_qt=false&_ns=SMART.facade.anken&_limitCount=2000&JOB_NO=&ANKEN_NAME_LIKE=&COMPANY_NO=&PREFECTURE_LIKE=&CITY_LIKE=&OFFICE_NO=&OFFICE_STAFF_NO=&OCCUPATION_CATEGORY=&AGE_MAX=&GENDER=&PREDETERMINED_ALLOWANCE_HOUR=&PREDETERMINED_ALLOWANCE_MONTH=&HOLIDAY_DESCRIPTION_LIKE=&DAY_SHIFT_ONLY=0&NIGHT_SHIFT_ONLY=0&TWO_SHIFT=0&THREE_SHIFT=0&OTHER=0&QUALIFICATION=&MEDIA_AGENCY_NO=&MEDIA_AGENCY_NAME=&EMPLOYMENT_TYPE=&ANKEN_RANK=&HIRING_RANK=&POST_TYPE=0&DORMITORY=0&DORMITORY_FEE_SUBSIDY=&FOREIGN_NATIONALITY_OK=0&TATTOO_OK=0'"
                     " -H 'Connection: keep-alive'"
                                                          " -H 'Accept: application/json, text/javascript, */*; q=0.01'"
                     " -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36'"
@@ -150,11 +151,9 @@ def download_curl_to_smart(start_time):
                     " -H 'Sec-Fetch-Dest: empty'"
                     " -H 'Referer: https://talent.metastasys.biz/appl/html/anken/AnkenList.html'"
                                                                             " -H 'Accept-Language: ja,en-US;q=0.9,en;q=0.8'"
-                    " --compressed -v")
-    # print(curl_command)
+                    " --compressed -s")
     curl_data = subprocess.Popen([curl_command], stdout=subprocess.PIPE, shell=True).stdout.read()
     print("end download")
-    print(curl_data)
     return curl_data
 
 def csv_download_from_smart(start_time):
@@ -164,77 +163,36 @@ def csv_download_from_smart(start_time):
         writer.writerow('お仕事No,職種,職種詳細1,職種詳細2,雇用形態,営業所,担当者,都道府県,市区町村,住所詳細,最寄駅,お仕事内容,シフト１・開始時刻,シフト１・終了時刻,シフト２・開始時刻,シフト２・終了時刻,シフト３・開始時刻,シフト３・終了時刻,休日,勤務シフト,休日･シフト備考,月収例,応募条件,必要資格,必要資格2,給与見込額,入社祝金,ミニボーナス,満了祝金,赴任旅費,引越費用,その他手当,給与単位,所定(円),シフト１・所定(日),シフト１・残業(H),シフト１・開始時刻,シフト１・終了時刻,シフト１・実働(H),シフト１・休憩時間(M),シフト２・所定(日),シフト２・残業(H),シフト２・開始時刻,シフト２・終了時刻,シフト２・実働(H),シフト２・休憩時間(M),シフト３・所定(日),シフト３・残業(H),シフト３・開始時刻,シフト３・終了時刻,シフト３・実働(H),シフト３・休憩時間(M),見出し,入社まで期間,高時給,高月給,交通費支給,扶養範囲OK,マイカー通勤,駐車場,送迎,日勤固定,夜勤固定,2交替,3交替,残業休出,寮･社宅,寮費,入寮期間,間取り,通勤距離,水道光熱,家電設備,築年数,駐車場,最寄駅,商業施設,未経験OK,男性活躍中,女性活躍中,シニア活躍中,ペア･家族OK,資格スキルサポート,オープニング,大量募集'.split(','))
 
     records = json.loads(download_curl_to_smart(start_time))
-    for i, record in enumerate(records['body']['_obj0']):
-        req_record = "%7B" \
-                 "%22dummy3%22%3A%22%E5%B1%A5%E6%AD%B4%22%2C" \
-                 "%22approvalClassification%22%3A%22" + urllib.parse.quote(record['approvalClassification']) + "%22%2C" \
-                 "%22applicationClassification%22%3A%22" + urllib.parse.quote(record['applicationClassification']) + "%22%2C" \
-                 "%22jobNo%22%3A%22" + urllib.parse.quote(record['jobNo']) + "%22%2C" \
-                 "%22customerCode%22%3A%22" + urllib.parse.quote(record['customerCode']) + "%22%2C" \
-                 "%22customerName%22%3A%22" + urllib.parse.quote(record['customerName']) + "%22%2C" \
-                 "%22jobOffersName%22%3A%22" + urllib.parse.quote(record['jobOffersName']) + "%22%2C" \
-                 "%22organizationCode%22%3A%22" + urllib.parse.quote(record['organizationCode']) + "%22%2C" \
-                 "%22organizationName%22%3A%22" + urllib.parse.quote(record['organizationName']) + "%22%2C" \
-                 "%22orderAmount%22%3A%22" + urllib.parse.quote(record['orderAmount']) + "%22%2C" \
-                 "%22assignedDueDate%22%3A%22" + urllib.parse.quote(record['assignedDueDate']) + "%22%2C" \
-                 "%22orderRemainingNumberPeople%22%3A%22" + urllib.parse.quote(record['orderRemainingNumberPeople']) + "%22%2C" \
-                 "%22receptionNumberPeople%22%3A" + urllib.parse.quote(str(record['receptionNumberPeople'])) + "%2C" \
-                 "%22numberPeopleMatching%22%3A" + urllib.parse.quote(str(record['numberPeopleMatching'])) + "%2C" \
-                 "%22adoptedNumberPeople%22%3A" + urllib.parse.quote(str(record['adoptedNumberPeople'])) + "%2C" \
-                 "%22notAdoptedNumberPeople%22%3A" + urllib.parse.quote(str(record['notAdoptedNumberPeople'])) + "%2C" \
-                 "%22createdate_begin%22%3A%22" + urllib.parse.quote(record['createdate_begin']) + "%22%2C" \
-                 "%22createtime_begin%22%3A%22" + urllib.parse.quote(record['createtime_begin']) + "%22%2C" \
-                 "%22comment%22%3A%22" + urllib.parse.quote("") + "%22%2C" \
-                 "%22approvalComments%22%3A%22" + urllib.parse.quote(record['approvalComments']) + "%22%2C" \
-                 "%22holdDenialReason%22%3A%22" + urllib.parse.quote(record['holdDenialReason']) + "%22%2C" \
-                 "%22createdate_pre%22%3A%22" + urllib.parse.quote(record['createdate_pre']) + "%22%2C" \
-                 "%22createtime_pre%22%3A%22" + urllib.parse.quote(record['createtime_pre']) + "%22%2C" \
-                 "%22createdate_end%22%3A%22" + urllib.parse.quote(record['createdate_end']) + "%22%2C" \
-                 "%22createtime_end%22%3A%22" + urllib.parse.quote(record['createtime_end']) + "%22%2C" \
-                 "%22prefectures1%22%3A%22" + urllib.parse.quote(record['prefectures1']) + "%22%2C" \
-                 "%22cityName1%22%3A%22" + urllib.parse.quote(record['cityName1']) + "%22%2C" \
-                 "%22personResponsibleCode%22%3A%22" + urllib.parse.quote(record['personResponsibleCode']) + "%22%2C" \
-                 "%22personResponsibleName%22%3A%22" + urllib.parse.quote(record['personResponsibleName']) + "%22%2C" \
-                 "%22jobCategory%22%3A%22" + urllib.parse.quote(record['jobCategory']) + "%22%2C" \
-                 "%22ageTo%22%3A%22" + urllib.parse.quote(record['ageTo']) + "%22%2C" \
-                 "%22gender%22%3A%22" + urllib.parse.quote(record['gender']) + "%22%2C" \
-                 "%22paymentClassification%22%3A%22" + urllib.parse.quote(record['paymentClassification']) + "%22%2C" \
-                 "%22predeterminedAllowance%22%3A%22" + urllib.parse.quote(record['predeterminedAllowance']) + "%22%2C" \
-                 "%22estimatedSalary%22%3A%22" + urllib.parse.quote(record['estimatedSalary']) + "%22%2C" \
-                 "%22holidayPossible%22%3A%22" + urllib.parse.quote(record['holidayPossible']) + "%22%2C" \
-                 "%22workDayWeekHolidayCondition%22%3A%22" + urllib.parse.quote(record['workDayWeekHolidayCondition']) + "%22%2C" \
-                 "%22necessaryQualifications%22%3A%22" + urllib.parse.quote(record['necessaryQualifications']) + "%22%2C" \
-                 "%22contractForm%22%3A%22" + urllib.parse.quote(record['contractForm']) + "%22%2C" \
-                 "%22proposalRankType%22%3A%22" + urllib.parse.quote(record['proposalRankType']) + "%22%2C" \
-                 "%22hiringRank%22%3A%22" + urllib.parse.quote(record['hiringRank']) + "%22%2C" \
-                 "%22postClassified%22%3A%22" + urllib.parse.quote(record['postClassified']) + "%22%2C" \
-                 "%22dormitoriesCompanyHousing%22%3A%22" + urllib.parse.quote(record['dormitoriesCompanyHousing']) + "%22%2C" \
-                 "%22foreignerPropriety%22%3A%22" + urllib.parse.quote(record['foreignerPropriety']) + "%22%2C" \
-                 "%22tattooPropriety%22%3A%22" + urllib.parse.quote(record['tattooPropriety']) + "%22%2C" \
-                 "%22requestNo%22%3A%22" + urllib.parse.quote(record['requestNo']) + "%22%2C" \
-                 "%22orderNo%22%3A%22" + urllib.parse.quote(record['orderNo']) + "%22%2C" \
-                 "%22jobProposalNumber%22%3A%22" + urllib.parse.quote(record['jobProposalNumber']) + "%22" \
-                 "%7D%2C"
 
-        next_records = subprocess.Popen(["curl -b " + os.getcwd() + "/cookie.txt" \
-                               " -x http://" + os.environ['PROXY_SERVER'] + ":80 -k 'http://talent.metastasys.biz/sinfoniacloud/api/GetjobOffersInfomationCsvRESTFacade.json'" \
-                               " -H 'Connection: keep-alive' " \
-                               " -H 'Cache-Control: max-age=0' " \
-                               " -H 'Origin: https://talent.metastasys.biz' " \
-                               " -H 'Upgrade-Insecure-Requests: 1' " \
-                               " -H 'Content-Type: application/x-www-form-urlencoded' " \
-                               " -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.84 Safari/537.36' " \
-                               " -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8' " \
-                               " -H 'Referer: https://talent.metastasys.biz/appl/html/jobOffers/JobCaseRefer.html' " \
-                               " -H 'Accept-Encoding: gzip, deflate, br' -H 'Accept-Language: ja,en-US;q=0.9,en;q=0.8' " \
-                               " --data " \
-                               "'_responseType=RedirectIfError" \
-                               "&_ns=" \
-                               "&_qt=false" \
-                               "&_body=%7B%22" \
-                               "_obj0%22%3A%5B" + req_record + \
-                               "%5D%7D'" \
-                               "--compressed"],stdout=subprocess.PIPE, shell=True).stdout.read().decode('utf-8').split('\n', 1)
+    for i, record in enumerate(records['body']['_obj0']):
+        # CSVファイルとしてダウンロードするには、クライアントからデータを渡してあげないといけない
+        # 検索で拾ったリストを1件ずつ処理
+        req_record = urllib.parse.quote(str(record))
+        curl_command = ("curl -b ./cookie.txt 'https://talent.metastasys.biz/sinfoniacloud/api/OutputAnkenInformation.json'"
+                        " -H 'Connection: keep-alive'"
+                        " -H 'Cache-Control: max-age=0'"
+                        " -H 'Upgrade-Insecure-Requests: 1'"
+                        " -H 'Origin: https://talent.metastasys.biz'"
+                        " -H 'Content-Type: application/x-www-form-urlencoded'"
+                        " -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36'"
+                        " -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9'"
+                        " -H 'Sec-Fetch-Site: same-origin'"
+                        " -H 'Sec-Fetch-Mode: navigate'"
+                        " -H 'Sec-Fetch-User: ?1'"
+                        " -H 'Sec-Fetch-Dest: document'"
+                        " -H 'Referer: https://talent.metastasys.biz/appl/html/anken/AnkenList.html'"
+                        " -H 'Accept-Language: ja,en-US;q=0.9,en;q=0.8'"
+                        " --data-raw '"
+                        "_responseType=RedirectIfError"
+                        "&_ns=SMART.facade.anken"
+                        "&_qt=false"
+                        "&_body=%7B%22"
+                        "_obj0%22%3A%5B" + req_record +
+                        "%5D%7D'"
+                        " --compressed -s")
+        # print(curl_command)
+        print("downloading data JOB_NO: " + record['JOB_NO'])
+        next_records = subprocess.Popen([curl_command],stdout=subprocess.PIPE, shell=True).stdout.read().decode('utf-8').split('\n', 1)
 
         # リクエストをした後にエラーが帰ってきた場合
         # 4/18, 19に2699-0006が上がってこなかった件の調査
@@ -328,6 +286,7 @@ def csv_make_for_trancom(start_time):
                 except UnicodeEncodeError:
                     # 認識できない文字に対する処理が必要
                     record = list(map(lambda r: str(r).replace(u"\uff5e", u"\u301c"), record))
+                    record = list(map(lambda r: str(r).replace(u"\u2763", ""), record))
                     writer.writerow(record)
                     continue
 
