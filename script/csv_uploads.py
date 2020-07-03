@@ -119,40 +119,39 @@ def csv_download_from_next(start_time):
 
 def download_curl_to_smart(start_time):
     print("Login to SMART management site.")
-    curl_command = ("curl -c ./cookie.txt -x " + os.environ['PROXY_SERVER'] + " 'https://talent.metastasys.biz/sinfoniacloud/api/Login.json'"
-                    " -H 'Connection: keep-alive'"
-                    " -H 'Accept: application/json, text/javascript, */*; q=0.01'"
-                    " -H 'X-Requested-With: XMLHttpRequest'"
-                    " -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36'"
-                    " -H 'Content-Type: application/json'"
-                    " -H 'Origin: https://talent.metastasys.biz'"
-                    " -H 'Sec-Fetch-Site: same-origin'"
-                    " -H 'Sec-Fetch-Mode: cors'"
-                    " -H 'Sec-Fetch-Dest: empty'"
-                    " -H 'Referer: https://talent.metastasys.biz/appl/menu.html'"
-                    " -H 'Accept-Language: ja,en-US;q=0.9,en;q=0.8'"
-                    " --data-binary $'{\"body\":{\"companyCD\":\"SMART\",\"userID\":\"" + os.environ['SMART_USER'] + "\",\"password\":\"" + os.environ['SMART_PASS'] + "\"}}\r\n'"
-                    " --compressed -s")
-    os.system(curl_command)
-    print("end login")
+    login_curl_command = ("curl -c ./cookie.txt -x " + os.environ['PROXY_SERVER'] + " 'https://talent.metastasys.biz/sinfoniacloud/api/Login.json'"
+                          " -H 'Connection: keep-alive'"
+                          " -H 'Accept: application/json, text/javascript, */*; q=0.01'"
+                          " -H 'X-Requested-With: XMLHttpRequest'"
+                          " -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36'"
+                          " -H 'Content-Type: application/json'"
+                          " -H 'Origin: https://talent.metastasys.biz'"
+                          " -H 'Sec-Fetch-Site: same-origin'"
+                          " -H 'Sec-Fetch-Mode: cors'"
+                          " -H 'Sec-Fetch-Dest: empty'"
+                          " -H 'Referer: https://talent.metastasys.biz/appl/menu.html'"
+                          " -H 'Accept-Language: ja,en-US;q=0.9,en;q=0.8'"
+                          " --data-binary $'{\"body\":{\"companyCD\":\"SMART\",\"userID\":\"" + os.environ['SMART_USER'] + "\",\"password\":\"" + os.environ['SMART_PASS'] + "\"}}\r\n'"
+                          " --compressed -s")
+    os.system(login_curl_command)
 
     print("Get the list of recruit data.")
     # 検索オプション
     #   掲載区分：掲載中 -> POST_TYPE=0
-    curl_command = ("curl -b ./cookie.txt -x " + os.environ['PROXY_SERVER'] + " 'https://talent.metastasys.biz/sinfoniacloud/api/SearchApprovedAnken.json"
-                    "?_qt=false&_ns=SMART.facade.anken&_limitCount=2000&JOB_NO=&ANKEN_NAME_LIKE=&COMPANY_NO=&PREFECTURE_LIKE=&CITY_LIKE=&OFFICE_NO=&OFFICE_STAFF_NO=&OCCUPATION_CATEGORY=&AGE_MAX=&GENDER=&PREDETERMINED_ALLOWANCE_HOUR=&PREDETERMINED_ALLOWANCE_MONTH=&HOLIDAY_DESCRIPTION_LIKE=&DAY_SHIFT_ONLY=0&NIGHT_SHIFT_ONLY=0&TWO_SHIFT=0&THREE_SHIFT=0&OTHER=0&QUALIFICATION=&MEDIA_AGENCY_NO=&MEDIA_AGENCY_NAME=&EMPLOYMENT_TYPE=&ANKEN_RANK=&HIRING_RANK=&POST_TYPE=0&DORMITORY=0&DORMITORY_FEE_SUBSIDY=&FOREIGN_NATIONALITY_OK=0&TATTOO_OK=0'"
-                    " -H 'Connection: keep-alive'"
-                    " -H 'Accept: application/json, text/javascript, */*; q=0.01'"
-                    " -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36'"
-                    " -H 'X-Requested-With: XMLHttpRequest'"
-                    " -H 'Sec-Fetch-Site: same-origin'"
-                    " -H 'Sec-Fetch-Mode: cors'"
-                    " -H 'Sec-Fetch-Dest: empty'"
-                    " -H 'Referer: https://talent.metastasys.biz/appl/html/anken/AnkenList.html'"
-                    " -H 'Accept-Language: ja,en-US;q=0.9,en;q=0.8'"
-                    " --compressed -s")
-    curl_data = subprocess.Popen([curl_command], stdout=subprocess.PIPE, shell=True).stdout.read()
-    return curl_data
+    list_curl_command = ("curl -b ./cookie.txt -x " + os.environ['PROXY_SERVER'] + " 'https://talent.metastasys.biz/sinfoniacloud/api/SearchApprovedAnken.json"
+                         "?_qt=false&_ns=SMART.facade.anken&_limitCount=2000&JOB_NO=&ANKEN_NAME_LIKE=&COMPANY_NO=&PREFECTURE_LIKE=&CITY_LIKE=&OFFICE_NO=&OFFICE_STAFF_NO=&OCCUPATION_CATEGORY=&AGE_MAX=&GENDER=&PREDETERMINED_ALLOWANCE_HOUR=&PREDETERMINED_ALLOWANCE_MONTH=&HOLIDAY_DESCRIPTION_LIKE=&DAY_SHIFT_ONLY=0&NIGHT_SHIFT_ONLY=0&TWO_SHIFT=0&THREE_SHIFT=0&OTHER=0&QUALIFICATION=&MEDIA_AGENCY_NO=&MEDIA_AGENCY_NAME=&EMPLOYMENT_TYPE=&ANKEN_RANK=&HIRING_RANK=&POST_TYPE=0&DORMITORY=0&DORMITORY_FEE_SUBSIDY=&FOREIGN_NATIONALITY_OK=0&TATTOO_OK=0'"
+                         " -H 'Connection: keep-alive'"
+                         " -H 'Accept: application/json, text/javascript, */*; q=0.01'"
+                         " -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36'"
+                         " -H 'X-Requested-With: XMLHttpRequest'"
+                         " -H 'Sec-Fetch-Site: same-origin'"
+                         " -H 'Sec-Fetch-Mode: cors'"
+                         " -H 'Sec-Fetch-Dest: empty'"
+                         " -H 'Referer: https://talent.metastasys.biz/appl/html/anken/AnkenList.html'"
+                         " -H 'Accept-Language: ja,en-US;q=0.9,en;q=0.8'"
+                         " --compressed -s")
+    list_curl_data = subprocess.Popen([list_curl_command], stdout=subprocess.PIPE, shell=True).stdout.read()
+    return list_curl_data
 
 def csv_download_from_smart(start_time):
     print('smartのcsvをダウンロード')
@@ -166,30 +165,30 @@ def csv_download_from_smart(start_time):
         # 各求人をCSVファイルとしてダウンロード
         # 一覧で取得したデータをサーバに渡してあげないといけないのでURLエンコードしてリクエストに付加する
         req_record = urllib.parse.quote(str(record))
-        curl_command = ("curl -b ./cookie.txt -x " + os.environ['PROXY_SERVER'] + " 'https://talent.metastasys.biz/sinfoniacloud/api/OutputAnkenInformation.json'"
-                        " -H 'Connection: keep-alive'"
-                        " -H 'Cache-Control: max-age=0'"
-                        " -H 'Upgrade-Insecure-Requests: 1'"
-                        " -H 'Origin: https://talent.metastasys.biz'"
-                        " -H 'Content-Type: application/x-www-form-urlencoded'"
-                        " -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36'"
-                        " -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9'"
-                        " -H 'Sec-Fetch-Site: same-origin'"
-                        " -H 'Sec-Fetch-Mode: navigate'"
-                        " -H 'Sec-Fetch-User: ?1'"
-                        " -H 'Sec-Fetch-Dest: document'"
-                        " -H 'Referer: https://talent.metastasys.biz/appl/html/anken/AnkenList.html'"
-                        " -H 'Accept-Language: ja,en-US;q=0.9,en;q=0.8'"
-                        " --data-raw '"
-                        "_responseType=RedirectIfError"
-                        "&_ns=SMART.facade.anken"
-                        "&_qt=false"
-                        "&_body=%7B%22"
-                        "_obj0%22%3A%5B" + req_record +
-                        "%5D%7D'"
-                        " --compressed -s")
-        print("Downloading recruit detail JOB_NO: " + record['JOB_NO'])
-        next_records = subprocess.Popen([curl_command],stdout=subprocess.PIPE, shell=True).stdout.read().decode('utf-8').split('\n', 1)
+        recruit_curl_command = ("curl -b ./cookie.txt -x " + os.environ['PROXY_SERVER'] + " 'https://talent.metastasys.biz/sinfoniacloud/api/OutputAnkenInformation.json'"
+                                " -H 'Connection: keep-alive'"
+                                " -H 'Cache-Control: max-age=0'"
+                                " -H 'Upgrade-Insecure-Requests: 1'"
+                                " -H 'Origin: https://talent.metastasys.biz'"
+                                " -H 'Content-Type: application/x-www-form-urlencoded'"
+                                " -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36'"
+                                " -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9'"
+                                " -H 'Sec-Fetch-Site: same-origin'"
+                                " -H 'Sec-Fetch-Mode: navigate'"
+                                " -H 'Sec-Fetch-User: ?1'"
+                                " -H 'Sec-Fetch-Dest: document'"
+                                " -H 'Referer: https://talent.metastasys.biz/appl/html/anken/AnkenList.html'"
+                                " -H 'Accept-Language: ja,en-US;q=0.9,en;q=0.8'"
+                                " --data-raw '"
+                                "_responseType=RedirectIfError"
+                                "&_ns=SMART.facade.anken"
+                                "&_qt=false"
+                                "&_body=%7B%22"
+                                "_obj0%22%3A%5B" + req_record +
+                                "%5D%7D'"
+                                " --compressed -s")
+        print(i + ". Downloading recruit detail JOB_NO: " + record['JOB_NO'])
+        next_records = subprocess.Popen([recruit_curl_command],stdout=subprocess.PIPE, shell=True).stdout.read().decode('utf-8').split('\n', 1)
 
         # リクエストをした後にエラーが帰ってきた場合
         # 4/18, 19に2699-0006が上がってこなかった件の調査
