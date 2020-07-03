@@ -187,7 +187,7 @@ def csv_download_from_smart(start_time):
                                 "_obj0%22%3A%5B" + req_record +
                                 "%5D%7D'"
                                 " --compressed -s")
-        print(i + ". Downloading recruit detail JOB_NO: " + record['JOB_NO'])
+        print(str(i) + ". Downloading recruit detail JOB_NO: " + record['JOB_NO'])
         next_records = subprocess.Popen([recruit_curl_command],stdout=subprocess.PIPE, shell=True).stdout.read().decode('utf-8').split('\n', 1)
 
         # リクエストをした後にエラーが帰ってきた場合
