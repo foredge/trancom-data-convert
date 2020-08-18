@@ -483,8 +483,8 @@ def csv_converter(data, exist_records):
         particular_about(data[64]),  #
         particular_about(data[65]),  #
         particular_about(data[66]),  #
-        dormitory(data[67]),  # こだわり条件‐寮費無料 無料の場合のみ以下を入力 1
-        particular_about(data[77]),  # こだわり条件‐未経験OK
+        dormitory_fee(data[66], data[67]),  # 130 こだわり条件‐寮費無料 無料の場合のみ以下を入力 1
+        particular_about(data[77]),  # 131 こだわり条件‐未経験OK
         particular_about(data[78]),  # こだわり条件‐男性活躍中
         particular_about(data[79]),  # こだわり条件‐女性活躍中
         particular_about(data[80]),  #
@@ -671,8 +671,8 @@ def job_type_text(data1, data2):
     else:
         return change_data1 + '\n' + change_data2
 
-def dormitory(data):
-    if data == '無料':
+def dormitory_fee(dormitory, dormitory_fee):
+    if dormitory == '1' and dormitory_fee == '無料':
         return 1
     return ''
 
