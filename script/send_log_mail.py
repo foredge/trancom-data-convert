@@ -64,12 +64,12 @@ def main():
         make_send_file(file_path)
 
         # ファイルの中身がからの場合はメールを送らない
-        if os.stat(file_path).st_size != 0
+        if os.path.getsize(file_path) != 0:
             for to_address in to_addresses:
                 send_mail(to_address, file_path)
         return 'OK'
     except:
-        return 'FAILD'
+        return 'FAILED'
 
 if __name__ == "__main__":
     main()
