@@ -62,7 +62,7 @@ def next_login(driver):
     driver.find_element_by_id('ManagerPassword').send_keys(os.environ['NEXT_MANAGER_PASSWORD'])
     driver.find_element_by_id("loginButton").click()
 
-def csv_upload(start_time):
+def csv_upload_to_410510(start_time):
     options = Options()
     options.add_argument('--headless')
     options.add_argument('--no-sandbox')
@@ -678,53 +678,21 @@ def dormitory_fee(dormitory, dormitory_fee):
         return 1
     return ''
 
-def g_drive_upload_next(start_time):
-    gauth = GoogleAuth()
-    gauth.CommandLineAuth()
-    drive = GoogleDrive(gauth)
+def g_drive_upload(folder_id, remote_file_name, local_file_path):
+    if os.path.exists(local_file_path):
+        try:
+            gauth = GoogleAuth()
+            gauth.CommandLineAuth()
+            drive = GoogleDrive(gauth)
 
-    folder_id = '1ROwxoJrX03sNGHqv6j5EYCpTMaiMwGY5'
-    f = drive.CreateFile({'title': 'job_' + start_time[:8] + '.csv',
-                          'mimeType': 'text/plain',
-                          'parents': [{'kind': 'drive#fileLink', 'id': folder_id}]})
-    f.SetContentFile('csv/next/' + start_time + '/job_' + start_time[:8] + '.csv')
-    f.Upload()
-
-def g_drive_upload_smart(start_time):
-    gauth = GoogleAuth()
-    gauth.CommandLineAuth()
-    drive = GoogleDrive(gauth)
-
-    folder_id = '1rpH5o5wOAGL8WdMPS8kObPzcFL1rCrTf'
-    f = drive.CreateFile({'title': 'smart_origin_' + start_time + '.csv',
-                          'mimeType': 'text/plain',
-                          'parents': [{'kind': 'drive#fileLink', 'id': folder_id}]})
-    f.SetContentFile('csv/smart/smart_origin_' + start_time + '.csv')
-    f.Upload()
-
-def g_drive_upload_trancom(start_time):
-    gauth = GoogleAuth()
-    gauth.CommandLineAuth()
-    drive = GoogleDrive(gauth)
-
-    folder_id = '1xEhxdRAY34EzY6W2teNMmu0VX5Sr5IPK'
-    f = drive.CreateFile({'title': 'trancom_origin_' + start_time + '.csv',
-                          'mimeType': 'text/plain',
-                          'parents': [{'kind': 'drive#fileLink', 'id': folder_id}]})
-    f.SetContentFile('csv/trancom/trancom_origin_' + start_time + '.csv')
-    f.Upload()
-
-def g_drive_upload_log(start_time):
-    if os.path.exists('./log/unsent_recruit_' + start_time + '.log'):
-        gauth = GoogleAuth()
-        gauth.CommandLineAuth()
-        drive = GoogleDrive(gauth)
-
-        f = drive.CreateFile({'title': start_time + '_log.csv',
-                              'mimeType': 'text/plain',
-                              'parents': [{'kind': 'drive#fileLink', 'id': os.environ['GDRIVE_FOLDER_ID']}]})
-        f.SetContentFile('log/unsent_recruit_' + start_time + '.log')
-        f.Upload()
+            f = drive.CreateFile({'title': remote_file_name,
+                                'mimeType': 'text/plain',
+                                'parents': [{'kind': 'drive#fileLink', 'id': folder_id}]})
+            f.SetContentFile(local_file_path)
+            f.Upload()
+            print('Successfully upload file ' + local_file_path)
+        except:
+            print('Failed to upload file ' + local_file_path)
 
 def get_job_convert_rule():
     scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
@@ -770,15 +738,31 @@ def main():
         csv_download_from_smart(start_time)
         print('csv_make_for_trancom')
         csv_make_for_trancom(start_time)
+        print('csv_upload')
+        csv_upload_to_410510(start_time)
         print('upload_file_to_gcs')
         upload_file_to_gcs(start_time)
         print('g_drive_upload files')
-        g_drive_upload_next(start_time)
-        g_drive_upload_smart(start_time)
-        g_drive_upload_trancom(start_time)
-        g_drive_upload_log(start_time)
-        print('csv_upload')
-        csv_upload(start_time)
+        g_drive_upload(
+            '1ROwxoJrX03sNGHqv6j5EYCpTMaiMwGY5',
+            'job_' + start_time[:8] + '.csv',
+            'csv/next/' + start_time + '/job_' + start_time[:8] + '.csv'
+        )
+        g_drive_upload(
+            '1rpH5o5wOAGL8WdMPS8kObPzcFL1rCrTf',
+            'smart_origin_' + start_time + '.csv',
+            'csv/smart/smart_origin_' + start_time + '.csv'
+        )
+        g_drive_upload(
+            '1xEhxdRAY34EzY6W2teNMmu0VX5Sr5IPK',
+            'trancom_origin_' + start_time + '.csv',
+            'csv/trancom/trancom_origin_' + start_time + '.csv'
+        )
+        g_drive_upload(
+            os.environ['GDRIVE_FOLDER_ID'],
+            start_time + '_log.csv',
+            'log/unsent_recruit_' + start_time + '.log'
+        )
         print('All process completed')
         return f'ok!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
     except:
