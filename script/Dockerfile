@@ -8,7 +8,10 @@ ENV PYTHONIOENCODING utf-8
 WORKDIR $APP_HOME
 COPY . .
 
-RUN apk add --update \
+RUN apk add --no-cache \
+      gcc \
+      libffi-dev \
+      musl-dev \
       curl \
       wget \
       vim \
@@ -26,6 +29,7 @@ RUN apk add --update \
     && chmod 644 -R /usr/share/fonts/noto/ \
     && fc-cache -fv \
     && rm -rf /app/noto \
+    && pip install --upgrade pip \
     # Add selenium
     && pip install \
       selenium \
