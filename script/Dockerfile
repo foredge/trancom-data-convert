@@ -31,17 +31,6 @@ RUN apk add --no-cache \
     && rm -rf /app/noto \
     && pip install --upgrade pip \
     # Add selenium
-    && pip install \
-      selenium \
-      PyDrive \
-      google-api-python-client \
-      google-auth \
-      google-auth-httplib2 \
-      google-cloud-storage \
-      httplib2 \
-      nose \
-      oauth2client \
-      gspread \
-      Flask
+    && pip install -r requirements.txt
 
 CMD flask run --host='0.0.0.0' --port=8000
