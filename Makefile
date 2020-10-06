@@ -19,8 +19,11 @@ logf:
 # selenium vnc
 # pass: secret
 vnc:
-	open vnc://localhost:5900
-
+	@if [ $(shell uname) = "Linux" ]; then \
+		vncviewer -passwd .vnc/passwd localhost:5900; \
+	else \
+		open vnc://localhost:5900; \
+	fi &
 
 # 本番検証用
 prdbuild:
