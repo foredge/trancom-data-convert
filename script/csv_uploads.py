@@ -778,8 +778,8 @@ def main():
         subject = 'トランコム自動アップロードのスクリプトが異常終了しました'
         body = 'プログラムの実行時にエラーが発生しました。システム管理者にご報告ください。'
         print(traceback.format_exc())
-        # send_mail(os.environ['FROM_ADDRESS'], os.environ['TO_ADDRESS'], subject, body)
-        # send_slack(subject + "\n" + traceback.format_exc())
+        send_mail(os.environ['FROM_ADDRESS'], os.environ['TO_ADDRESS'], subject, body)
+        send_slack(subject + "\n" + traceback.format_exc())
         return f'Except!!'
 
 if __name__ == "__main__":
