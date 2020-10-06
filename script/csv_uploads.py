@@ -276,8 +276,17 @@ def csv_make_for_trancom(start_time):
                     writer.writerow(record)
                 except UnicodeEncodeError:
                     # 認識できない文字に対する処理が必要
+                    # こんなエラーが出たときに対処
+                    # UnicodeEncodeError: 'shift_jisx0213' codec can't encode character '\uff3c' in position 309: illegal multibyte sequence
+                    # https://0g0.org/unicode/ff5e/
+                    # 〜
                     record = list(map(lambda r: str(r).replace(u"\uff5e", u"\u301c"), record))
+                    # https://0g0.org/unicode/2763/
+                    # ❣
                     record = list(map(lambda r: str(r).replace(u"\u2763", ""), record))
+                    # https://0g0.org/unicode/ff3c/
+                    # ＼ > \
+                    record = list(map(lambda r: str(r).replace(u"\uff3c", u"\u005c"), record))
                     writer.writerow(record)
                     continue
 
@@ -769,8 +778,8 @@ def main():
         subject = 'トランコム自動アップロードのスクリプトが異常終了しました'
         body = 'プログラムの実行時にエラーが発生しました。システム管理者にご報告ください。'
         print(traceback.format_exc())
-        send_mail(os.environ['FROM_ADDRESS'], os.environ['TO_ADDRESS'], subject, body)
-        send_slack(subject + "\n" + traceback.format_exc())
+        # send_mail(os.environ['FROM_ADDRESS'], os.environ['TO_ADDRESS'], subject, body)
+        # send_slack(subject + "\n" + traceback.format_exc())
         return f'Except!!'
 
 if __name__ == "__main__":
