@@ -7,11 +7,15 @@
     "addrs",
     "anken",
     "apng",
+    "foredge",
     "gauth",
     "gspread",
     "jisx",
+    "prdbuild",
+    "prdrun",
     "pydrive",
     "smtplib",
+    "trancom",
     "trancomsc",
     "webp"
   ]
