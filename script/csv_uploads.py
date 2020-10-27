@@ -112,7 +112,6 @@ def csv_download_from_next(start_time):
     next_login(driver)
 
     driver.find_element_by_class_name('inputSubmit').click()
-    download_file_path = "./csv/next/job_" + start_time[:8] + ".csv"
     sleep(10)
     driver.close()
     driver.quit()
@@ -429,13 +428,13 @@ def csv_converter(data, exist_records):
         data[18],  # 休日・休暇
         work_time(data[12], data[13]),  # 勤務時間1（開始時間）
         work_time(data[13], data[12]),  # 勤務時間1（終了時間）
-        '',        # 勤務時間1（備考）
+        '',                             # 勤務時間1（備考）
         work_time(data[14], data[15]),  # 勤務時間2（開始時間）
         work_time(data[15], data[14]),  # 勤務時間2（終了時間）
-        '',        # 勤務時間2（終了時間）
+        '',                             # 勤務時間2（終了時間）
         work_time(data[16], data[17]),  # 勤務時間3（開始時間）
         work_time(data[17], data[16]),  # 勤務時間3（終了時間）
-        '',        # 勤務時間3（備考）
+        '',                             # 勤務時間3（備考）
         '',  #
         '',  #
         '',  #
@@ -744,6 +743,7 @@ def main():
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = 'spreadsheet_service_account.json'
     # 日本時間に合わせる
     start_time = (datetime.datetime.now() + datetime.timedelta(hours=9)).strftime("%Y%m%d%H%M%S")
+    # start_time = '20201027103945'
     try:
         global JOB_CONVERT_RULE
         JOB_CONVERT_RULE = get_job_convert_rule()
