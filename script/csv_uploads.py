@@ -358,8 +358,10 @@ def csv_make_for_trancom(start_time):
 
 def csv_converter(data, exist_records):
     # smartのデータを読み込んで変換をする
-    if data.__len__() == 84:
-        data.insert(24, '')
+    # !! HeadsUp !!
+    # なぜ24列目を追加しているのか意図はわからないが、初期のcommitから存在していて、
+    # 多数のカラムに影響するので、残したままにしています。
+    data.insert(24, '')
     record = [
         # スプレッドシートの列番号と比較する場合は -1 で見ること（配列の0スタートで記述されているため）
         # スプレッドシートの対応IDも同じく
@@ -449,7 +451,7 @@ def csv_converter(data, exist_records):
         '',  #
         '',  #
         '',  #
-        data[11] + passive_smoking(data[84], data[86]),  # 86 仕事内容 既存案件は既存の値を入れる
+        data[11] + passive_smoking(data[85], data[87]),  # 86 仕事内容 既存案件は既存の値を入れる
         '',  # 87 ここがポイント 既存案件は既存の値を入れる
         data[22],  # 88 応募資格
         'どちらでも',  #
