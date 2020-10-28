@@ -30,10 +30,21 @@ $ make prdbuild && make prdrun
 ```
 
 ## 処理実行URL
+クローリングとCSVデータを基にしたデータの同期  
 http://localhost:8000/
 
+エラーメールの送信  
 http://localhost:8000/mail
 
+## 資料
+変換ルールについてのスプレッドシート  
+https://docs.google.com/spreadsheets/d/1ZeTgqvqx28YFOvr4118cJKYj3ZxqPkojGl8fYkNI17Q/edit
+
+トランコム関連の資料  
+https://drive.google.com/drive/u/0/folders/0B0BPCxlRywtCbHkyajNlT0VRWms
+
+過去のCSVログ  
+https://drive.google.com/drive/u/0/folders/1f87O-xRBLynhzhoV-bLGwaKCfZR5L9JA
 
 # SMARTシステムのACL対策について
 SMARTにアクセスできるのは、
