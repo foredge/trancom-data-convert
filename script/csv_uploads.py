@@ -451,7 +451,7 @@ def csv_converter(data, exist_records):
         '',  #
         '',  #
         '',  #
-        data[11] + passive_smoking(data[85], data[87]),  # 86 仕事内容 既存案件は既存の値を入れる
+        data[11],  # 86 仕事内容 既存案件は既存の値を入れる
         '',  # 87 ここがポイント 既存案件は既存の値を入れる
         data[22],  # 88 応募資格
         'どちらでも',  #
@@ -521,11 +521,11 @@ def csv_converter(data, exist_records):
             record[86] = exist_record[86]
             record[87] = exist_record[87]
     # 仕事内容にこだわり条件の内容を付与する処理
-    record = add_particular_about(record)
+    record = add_particular_about(record, data)
 
     return record
 
-def add_particular_about(record):
+def add_particular_about(record, data):
     # 文字列を操作して増減できるようにする
     add_words = ''
     if record[112] == '1':
@@ -588,6 +588,9 @@ def add_particular_about(record):
 
     record[86] += '\n\n\n...'
     record[86] += add_words
+
+    # 受動喫煙対策の文言をタグの下に挿入
+    record[86] += passive_smoking(data[85], data[87])
 
     return record
 
